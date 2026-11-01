@@ -1,0 +1,52 @@
+<h1>Invitaciones</h1>
+
+@if (message()) {
+  <p class="ok">{{ message() }}</p>
+}
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="save()" class="form">
+  <h2>{{ editingId() == null ? 'Nueva' : 'Editar' }}</h2>
+  <label>Código <input formControlName="inviteCode" /></label>
+  <label>Etiqueta <input formControlName="label" /></label>
+  <label>Máx. asistentes <input type="number" min="1" formControlName="maxAttendees" /></label>
+  <label class="chk"><input type="checkbox" formControlName="active" /> Activa</label>
+  <div class="actions">
+    <button type="submit">Guardar</button>
+    @if (editingId() != null) {
+      <button type="button" class="ghost" (click)="cancelEdit()">Cancelar</button>
+    }
+  </div>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th>Código</th>
+      <th>Etiqueta</th>
+      <th>Máx.</th>
+      <th>RSVP</th>
+      <th>Adorno</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (item of items(); track item.id) {
+      <tr>
+        <td>{{ item.inviteCode }}</td>
+        <td>{{ item.label }}</td>
+        <td>{{ item.maxAttendees }}</td>
+        <td>{{ item.hasRsvp ? 'Sí' : 'No' }}</td>
+        <td>{{ item.ornamentCode || '—' }}</td>
+        <td class="row-actions">
+          <button type="button" (click)="startEdit(item)">Editar</button>
+          <button type="button" (click)="assignOrnament(item.id)">Adorno</button>
+          <button type="button" (click)="regenerate(item.id)">Token</button>
+          <button type="button" (click)="remove(item.id)">Borrar</button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

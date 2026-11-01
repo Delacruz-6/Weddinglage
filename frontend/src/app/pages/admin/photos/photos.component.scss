@@ -1,0 +1,83 @@
+h1,
+h2 {
+  font-family: var(--font-display);
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #d9d0bf;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form {
+  display: grid;
+  gap: 0.65rem;
+  max-width: 28rem;
+}
+
+label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.chk {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+input {
+  padding: 0.5rem;
+  border: 1px solid #c9c0b0;
+  font: inherit;
+}
+
+button {
+  justify-self: start;
+  border: 0;
+  background: var(--color-burgundy);
+  color: #fff;
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+.token-box {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: var(--color-cream);
+  word-break: break-all;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e5ddd0;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.ok {
+  color: var(--color-fir);
+}
+
+.error {
+  color: var(--color-burgundy);
+}
+
+.meta {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}

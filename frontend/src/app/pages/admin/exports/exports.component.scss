@@ -1,0 +1,16 @@
+h1 {
+  font-family: var(--font-display);
+  margin-top: 0;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+a {
+  color: var(--color-burgundy);
+  font-weight: 600;
+}

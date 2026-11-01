@@ -1,0 +1,66 @@
+<app-snow />
+<div class="wrap">
+  <a routerLink="/" class="back">← Inicio</a>
+  <h1>Editar confirmación</h1>
+
+  @if (loading()) {
+    <p>Cargando…</p>
+  } @else if (error() && !form.dirty) {
+    <p class="error">{{ error() }}</p>
+  } @else {
+    <p class="code">Invitación: <strong>{{ inviteCode() }}</strong></p>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <fieldset>
+        <legend>¿Vendréis?</legend>
+        <label class="radio"><input type="radio" formControlName="attending" [value]="true" /> Sí</label>
+        <label class="radio"><input type="radio" formControlName="attending" [value]="false" /> No</label>
+      </fieldset>
+      <div class="row">
+        <label>Adultos <input type="number" min="0" formControlName="adults" /></label>
+        <label>Niños <input type="number" min="0" formControlName="children" /></label>
+      </div>
+      <label>Notas <textarea formControlName="notes" rows="3"></textarea></label>
+
+      <fieldset formArrayName="dietaryRequirements">
+        <legend>Requisitos alimentarios</legend>
+        @for (d of dietary.controls; track $index; let i = $index) {
+          <div class="row" [formGroupName]="i">
+            <input formControlName="type" placeholder="Tipo" />
+            <input formControlName="detail" placeholder="Detalle" />
+          </div>
+        }
+      </fieldset>
+
+      <fieldset formArrayName="transport">
+        <legend>Transporte</legend>
+        @for (t of transport.controls; track $index; let i = $index) {
+          <div class="row" [formGroupName]="i">
+            <input formControlName="busSlot" placeholder="Turno bus" />
+            <input formControlName="stopId" placeholder="Parada" />
+            <input type="number" min="0" formControlName="seats" />
+          </div>
+        }
+      </fieldset>
+
+      <fieldset formArrayName="songs">
+        <legend>Canciones</legend>
+        @for (s of songs.controls; track $index; let i = $index) {
+          <div class="row" [formGroupName]="i">
+            <input formControlName="title" placeholder="Título" />
+            <input formControlName="artist" placeholder="Artista" />
+          </div>
+        }
+      </fieldset>
+
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+      @if (saved()) {
+        <p class="ok">Cambios guardados.</p>
+      }
+      <button type="submit" class="btn" [disabled]="saving()">
+        {{ saving() ? 'Guardando…' : 'Guardar cambios' }}
+      </button>
+    </form>
+  }
+</div>

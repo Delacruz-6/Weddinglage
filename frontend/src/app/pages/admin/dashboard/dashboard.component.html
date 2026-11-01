@@ -1,0 +1,17 @@
+<h1>Panel</h1>
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (data()) {
+  @if (data(); as d) {
+    <div class="stats">
+      <div><span>Invitaciones</span><strong>{{ d.invitationsTotal }}</strong><small>{{ d.invitationsActive }} activas</small></div>
+      <div><span>RSVP</span><strong>{{ d.rsvpTotal }}</strong><small>{{ d.rsvpAttending }} sí / {{ d.rsvpDeclined }} no</small></div>
+      <div><span>Invitados esperados</span><strong>{{ d.guestsExpected }}</strong></div>
+      <div><span>Fotos</span><strong>{{ d.photosPending }}</strong><small>{{ d.photosApproved }} aprobadas / {{ d.photosRejected }} rechazadas</small></div>
+      <div><span>Galería</span><strong>{{ d.galleryPublished ? 'Publicada' : 'No publicada' }}</strong></div>
+      <div><span>Adornos</span><strong>{{ d.ornamentsAssigned }}</strong></div>
+    </div>
+  }
+} @else {
+  <p>Cargando…</p>
+}

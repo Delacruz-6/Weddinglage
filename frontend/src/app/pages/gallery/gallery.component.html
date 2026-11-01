@@ -1,0 +1,19 @@
+<app-snow />
+<div class="wrap">
+  <a routerLink="/" class="back">← Inicio</a>
+  <h1>Galería</h1>
+
+  @if (loading()) {
+    <p>Cargando…</p>
+  } @else if (photos().length) {
+    <div class="grid">
+      @for (p of photos(); track p.id) {
+        <figure>
+          <img [src]="src(p.id)" [alt]="'Foto ' + p.id" loading="lazy" />
+        </figure>
+      }
+    </div>
+  } @else {
+    <p class="empty">{{ emptyMessage() || error() }}</p>
+  }
+</div>

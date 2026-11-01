@@ -11,13 +11,14 @@ Aplicación web de boda navideña (18 de diciembre de 2027): invitación digital
 |-----------|-----------|
 | [`docs/especificacion-boda-navidena.md`](docs/especificacion-boda-navidena.md) | Especificación funcional y técnica (mejorada) |
 | [`docs/plan-desarrollo.md`](docs/plan-desarrollo.md) | Plan de desarrollo completo (fases, API, RGPD, costes) |
+| [`docs/arranque-local.md`](docs/arranque-local.md) | Arranque local con Docker Compose (Windows) |
 
 ## Estructura del monorepo
 
 ```text
-frontend/   # Angular (scaffold pendiente de generación)
-backend/    # Spring Boot (scaffold pendiente de generación)
-docker/     # Nginx, overlays y scripts de Compose
+frontend/   # Angular SPA (imagen nginx en :80)
+backend/    # Spring Boot API (:8080 interno)
+docker/     # Nginx edge (proxy SPA + /api)
 docs/       # Especificación y plan
 ```
 
@@ -26,26 +27,30 @@ docs/       # Especificación y plan
 - Docker y Docker Compose
 - (Opcional) Node.js / JDK solo si desarrollas fuera de los contenedores
 
-## Arranque local (objetivo)
-
-Cuando existan los Dockerfiles y el `docker-compose.yml`:
+## Arranque local
 
 ```bash
-cp .env.example .env   # cuando esté disponible
+cp .env.example .env   # en Windows: copy .env.example .env
+# Editar .env: contraseñas locales y TOKEN_PEPPER
 docker compose up --build
 ```
 
-Servicios previstos:
+Detalle paso a paso en Windows: [`docs/arranque-local.md`](docs/arranque-local.md).
 
-| Servicio | Rol |
-|----------|-----|
-| Nginx | SPA + proxy `/api` (mismo origen → cookies de sesión) |
-| API | Spring Boot |
-| PostgreSQL | Datos + Flyway |
-| MinIO | Almacenamiento S3-compatible de fotos |
-| Mailhog (opcional) | Correo en desarrollo |
+Entrada pública: **http://localhost** (Nginx en `:80`).
 
-La app pública quedará en `http://localhost` (puerto según Compose). Admin en `/admin` con sesión por cookie HttpOnly + CSRF.
+| Servicio | Rol | Puertos |
+|----------|-----|---------|
+| `nginx` | Proxy: `/` → `web:80`, `/api/` → `api:8080` | **80** |
+| `web` | SPA Angular (nginx interno) | 80 (interno) |
+| `api` | Spring Boot | 8080 (interno) |
+| `postgres` | Datos + Flyway | 5432 (debug) |
+| `minio` | S3-compatible local (Adobe S3Mock) | 9000→9090 |
+| `mailhog` | SMTP de desarrollo + UI | 1025, 8025 |
+
+Arquitectura de red: el navegador solo habla con Nginx. Cookies de sesión y CSRF van por el mismo origen (`localhost`) gracias al proxy `/api/`.
+
+Admin en `/admin` con sesión por cookie HttpOnly + CSRF.
 
 ## Remoto GitHub
 

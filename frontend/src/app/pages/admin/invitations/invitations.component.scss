@@ -1,0 +1,80 @@
+h1,
+h2 {
+  font-family: var(--font-display);
+}
+
+.form {
+  display: grid;
+  gap: 0.65rem;
+  max-width: 28rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #d9d0bf;
+}
+
+label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.chk {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+input {
+  padding: 0.5rem;
+  border: 1px solid #c9c0b0;
+  font: inherit;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+button {
+  border: 0;
+  background: var(--color-burgundy);
+  color: #fff;
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+  font: inherit;
+
+  &.ghost {
+    background: transparent;
+    color: var(--color-fir);
+    border: 1px solid #c9c0b0;
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e5ddd0;
+  padding: 0.55rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.ok {
+  color: var(--color-fir);
+}
+
+.error {
+  color: var(--color-burgundy);
+}

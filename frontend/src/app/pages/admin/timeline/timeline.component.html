@@ -1,0 +1,36 @@
+<h1>Programa</h1>
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="save()" class="form">
+  <h2>{{ editingId() == null ? 'Nuevo evento' : 'Editar evento' }}</h2>
+  <label>Hora <input type="time" formControlName="eventTime" /></label>
+  <label>Título <input formControlName="title" /></label>
+  <label>Descripción <textarea formControlName="description" rows="2"></textarea></label>
+  <label>Icono <input formControlName="icon" /></label>
+  <label>Orden <input type="number" formControlName="sortOrder" /></label>
+  <div class="actions">
+    <button type="submit">Guardar</button>
+    @if (editingId() != null) {
+      <button type="button" class="ghost" (click)="cancelEdit()">Cancelar</button>
+    }
+  </div>
+</form>
+
+<ul class="list">
+  @for (item of items(); track item.id) {
+    <li>
+      <strong>{{ item.eventTime?.slice(0, 5) }} · {{ item.title }}</strong>
+      @if (item.description) {
+        <p>{{ item.description }}</p>
+      }
+      <div class="actions">
+        <button type="button" (click)="startEdit(item)">Editar</button>
+        @if (item.id != null) {
+          <button type="button" (click)="remove(item.id)">Borrar</button>
+        }
+      </div>
+    </li>
+  }
+</ul>

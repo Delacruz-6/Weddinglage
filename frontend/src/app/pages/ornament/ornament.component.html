@@ -1,0 +1,31 @@
+<app-snow />
+<div class="wrap">
+  <a routerLink="/" class="back">← Inicio</a>
+  <h1>Vuestro adorno</h1>
+
+  <form class="lookup" (ngSubmit)="lookup()">
+    <label>
+      Código de invitación
+      <input [(ngModel)]="inviteInput" name="inviteCode" autocomplete="off" />
+    </label>
+    <button type="submit" class="btn">Ver adorno</button>
+  </form>
+
+  @if (loading()) {
+    <p>Cargando…</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else {
+    @if (ornament(); as o) {
+      <article class="card">
+        <p class="name">{{ o.ornamentName || o.ornamentCode || 'Adorno asignado' }}</p>
+        @if (o.ornamentCode) {
+          <p class="code">Código: {{ o.ornamentCode }}</p>
+        }
+        @if (o.imageKey) {
+          <p class="muted">Imagen: {{ o.imageKey }}</p>
+        }
+      </article>
+    }
+  }
+</div>

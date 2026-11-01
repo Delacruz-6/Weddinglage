@@ -1,0 +1,13 @@
+<div class="overlay" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+  <div class="panel">
+    <p class="eyebrow">Bienvenidos</p>
+    <h1 id="welcome-title">{{ partnerNames || 'Nombres pendientes' }}</h1>
+    @if (message) {
+      <p class="message">{{ message }}</p>
+    } @else {
+      <p class="message">Os esperamos en una celebración llena de magia navideña.</p>
+    }
+    <button type="button" class="cta" (click)="enter()">Entrar en nuestra Navidad</button>
+    <button type="button" class="skip" (click)="enter()">Saltar</button>
+  </div>
+</div>

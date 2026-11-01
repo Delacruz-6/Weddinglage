@@ -1,0 +1,41 @@
+:host {
+  display: block;
+  position: relative;
+  z-index: 2;
+  min-height: 100svh;
+}
+
+.wrap {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  color: var(--color-snow);
+}
+
+.back {
+  color: var(--color-gold);
+  text-decoration: none;
+}
+
+h1 {
+  font-family: var(--font-display);
+  color: var(--color-gold);
+}
+
+.file {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+input[type='file'] {
+  color: var(--color-cream);
+}
+
+.ok {
+  color: var(--color-gold);
+}
+
+.error {
+  color: #f3c1c8;
+}

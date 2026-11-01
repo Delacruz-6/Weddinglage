@@ -1,0 +1,50 @@
+.login {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(160deg, var(--color-dark), var(--color-fir));
+}
+
+.card {
+  width: min(22rem, 100%);
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.5rem;
+  background: var(--color-snow);
+  color: var(--color-dark);
+  border: 1px solid var(--color-gold);
+}
+
+h1 {
+  font-family: var(--font-display);
+  margin: 0 0 0.5rem;
+  color: var(--color-fir);
+}
+
+label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+}
+
+input {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #c9c0b0;
+  font: inherit;
+}
+
+button {
+  margin-top: 0.5rem;
+  border: 0;
+  background: var(--color-burgundy);
+  color: var(--color-snow);
+  padding: 0.7rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+.error {
+  color: var(--color-burgundy);
+  margin: 0;
+}

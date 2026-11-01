@@ -1,0 +1,73 @@
+<h1>Fotos</h1>
+
+@if (message()) {
+  <p class="ok">{{ message() }}</p>
+}
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+}
+
+<section class="panel">
+  <h2>Publicación de galería</h2>
+  <form [formGroup]="pubForm" (ngSubmit)="savePublication()" class="form">
+    <label>Publicar a partir de <input type="datetime-local" formControlName="publishAt" /></label>
+    <label class="chk"><input type="checkbox" formControlName="adminAuthorized" /> Autorizada por admin</label>
+    <button type="submit">Guardar publicación</button>
+  </form>
+  @if (publication(); as p) {
+    <p class="meta">
+      Estado: {{ p.adminAuthorized ? 'autorizada' : 'no autorizada' }}
+      @if (p.authorizedBy) {
+        · por {{ p.authorizedBy }}
+      }
+    </p>
+  }
+</section>
+
+<section class="panel">
+  <h2>Token de subida</h2>
+  <form [formGroup]="tokenForm" (ngSubmit)="createToken()" class="form">
+    <label>Etiqueta <input formControlName="label" /></label>
+    <label>Caduca <input type="datetime-local" formControlName="expiresAt" /></label>
+    <button type="submit">Crear token</button>
+  </form>
+  @if (createdToken(); as t) {
+    <div class="token-box">
+      <p><strong>Token:</strong> <code>{{ t.token }}</code></p>
+      <p><strong>URL / QR:</strong> <code>{{ uploadUrl(t.token) }}</code></p>
+      @if (t.expiresAt) {
+        <p>Caduca: {{ t.expiresAt }}</p>
+      }
+    </div>
+  }
+</section>
+
+<section class="panel">
+  <h2>Moderación</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Estado</th>
+        <th>Subida</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (p of photos(); track p.id) {
+        <tr>
+          <td>{{ p.id }}</td>
+          <td>{{ p.originalName || '—' }}</td>
+          <td>{{ p.status }}</td>
+          <td>{{ p.uploadedAt | date: 'short' }}</td>
+          <td class="row-actions">
+            <button type="button" (click)="setStatus(p.id, 'APPROVED')">Aprobar</button>
+            <button type="button" (click)="setStatus(p.id, 'REJECTED')">Rechazar</button>
+            <button type="button" (click)="remove(p.id)">Borrar</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>

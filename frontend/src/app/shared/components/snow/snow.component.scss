@@ -1,0 +1,36 @@
+.snow {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.flake {
+  position: absolute;
+  top: -8%;
+  left: calc((var(--i) * 2.7%) + 1%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-snow) 80%, transparent);
+  opacity: 0.55;
+  animation: fall calc(9s + (var(--i) * 0.35s)) linear infinite;
+  animation-delay: calc(var(--i) * -0.4s);
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  100% {
+    transform: translateY(110vh) translateX(18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flake {
+    animation: none;
+    opacity: 0.2;
+  }
+}

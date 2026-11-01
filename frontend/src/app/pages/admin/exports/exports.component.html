@@ -1,0 +1,9 @@
+<h1>Exportaciones</h1>
+<p>Descargad los CSV desde la API (requiere sesión de administración).</p>
+<ul>
+  @for (link of links; track link.kind) {
+    <li>
+      <a [href]="url(link.kind)" target="_blank" rel="noopener">{{ link.label }}</a>
+    </li>
+  }
+</ul>

@@ -1,0 +1,101 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # Local S3-compatible store. Official minio/minio pulls are blocked on some networks;
+  # cleanstart/minio failed volume permissions on Docker Desktop Windows — S3Mock works for MVP local.
+  minio:
+    image: adobe/s3mock:latest
+    environment:
+      initialBuckets: ${MINIO_BUCKET:-wedding-photos}
+      rootAccessKey: ${MINIO_ROOT_USER}
+      rootSecretKey: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9090"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:9090/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      MINIO_ENDPOINT: http://minio:9090
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      MINIO_REGION: ${MINIO_REGION:-us-east-1}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      TOKEN_PEPPER: ${TOKEN_PEPPER}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost}
+      SPRING_MAIL_HOST: mailhog
+      SPRING_MAIL_PORT: "1025"
+    expose:
+      - "8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://127.0.0.1:8080/api/actuator/health || wget -q -O /dev/null http://127.0.0.1:8080/api/actuator/health || exit 1",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    expose:
+      - "80"
+    depends_on:
+      - api
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api
+      - web
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  postgres_data:

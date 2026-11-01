@@ -1,0 +1,26 @@
+@if (invalid()) {
+  <p class="countdown-msg">Fecha por confirmar</p>
+} @else if (passed()) {
+  <p class="countdown-msg celebration">¡Ya es nuestra Navidad juntos!</p>
+} @else {
+  @if (parts(); as p) {
+    <div class="countdown" aria-live="polite">
+      <div class="unit">
+        <span class="value">{{ p.days }}</span>
+        <span class="label">días</span>
+      </div>
+      <div class="unit">
+        <span class="value">{{ p.hours }}</span>
+        <span class="label">horas</span>
+      </div>
+      <div class="unit">
+        <span class="value">{{ p.minutes }}</span>
+        <span class="label">min</span>
+      </div>
+      <div class="unit">
+        <span class="value">{{ p.seconds }}</span>
+        <span class="label">seg</span>
+      </div>
+    </div>
+  }
+}

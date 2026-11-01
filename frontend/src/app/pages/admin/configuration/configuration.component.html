@@ -1,0 +1,33 @@
+<h1>Configuración</h1>
+@if (loading()) {
+  <p>Cargando…</p>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="save()" class="form">
+    <label>Nombres de la pareja <input formControlName="partnerNames" /></label>
+    <label>Fecha y hora (local) <input type="datetime-local" formControlName="weddingAt" /></label>
+    <label>Mensaje de bienvenida <textarea formControlName="welcomeMessage" rows="3"></textarea></label>
+    <label>Historia (HTML) <textarea formControlName="storyHtml" rows="6"></textarea></label>
+    <label>IBAN regalo <input formControlName="giftIban" /></label>
+    <label>Titular <input formControlName="giftHolder" /></label>
+
+    <fieldset>
+      <legend>Secciones visibles</legend>
+      <label class="chk"><input type="checkbox" formControlName="showStory" /> Historia</label>
+      <label class="chk"><input type="checkbox" formControlName="showVenue" /> Lugar</label>
+      <label class="chk"><input type="checkbox" formControlName="showTimeline" /> Programa</label>
+      <label class="chk"><input type="checkbox" formControlName="showPlaylist" /> Playlist</label>
+      <label class="chk"><input type="checkbox" formControlName="showGifts" /> Regalos</label>
+      <label class="chk"><input type="checkbox" formControlName="showRsvp" /> RSVP</label>
+      <label class="chk"><input type="checkbox" formControlName="showPhotos" /> Fotos</label>
+      <label class="chk"><input type="checkbox" formControlName="showOrnaments" /> Adornos</label>
+    </fieldset>
+
+    @if (message()) {
+      <p class="ok">{{ message() }}</p>
+    }
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+    <button type="submit" [disabled]="saving()">{{ saving() ? 'Guardando…' : 'Guardar' }}</button>
+  </form>
+}

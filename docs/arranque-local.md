@@ -1,6 +1,6 @@
 # Arranque en local — Weddinglage
 
-Guía corta para levantar el proyecto en tu PC.
+Guía corta para levantar el proyecto en tu PC con Docker Compose.
 
 | | |
 |--|--|
@@ -10,17 +10,15 @@ Guía corta para levantar el proyecto en tu PC.
 
 ------------------------------------------------------------------------
 
-## 1. Qué hay hoy en GitHub
+## 1. Qué hay en el repo
 
-En el remoto verás sobre todo **carpetas vacías** (`frontend/`, `backend/`, `docker/` con `.gitkeep`) más la documentación en `docs/`.
-
-Aún **no** está el código de la app ni el `docker-compose.yml`. Por eso `docker compose up` **todavía no puede arrancar la boda**.
+En la raíz están `docker-compose.yml`, `.env.example`, `backend/Dockerfile`, `frontend/Dockerfile` (SPA en nginx `:80`) y `docker/nginx/default.conf` (edge proxy).
 
 Este documento sirve para:
 
 1. Dejar tu PC listo.
-2. Saber los comandos exactos de arranque cuando exista Compose (Fase 0).
-3. No confundir “repo clonado” con “app en marcha”.
+2. Arrancar con Compose.
+3. Saber URLs y cómo parar / resetear datos.
 
 ------------------------------------------------------------------------
 
@@ -38,7 +36,7 @@ docker compose version
 - [ ] Docker Desktop (con WSL2 si te lo pide) **en marcha** (icono de ballena)  
 - [ ] Acceso al repo **privado** con tu cuenta GitHub  
 
-Opcional para desarrollar fuera de Docker más adelante: Node.js LTS y JDK 21.
+Opcional para desarrollar fuera de Docker: Node.js LTS y JDK 21.
 
 ------------------------------------------------------------------------
 
@@ -71,9 +69,7 @@ Debe verse: `https://github.com/Delacruz-6/Weddinglage.git`
 
 ------------------------------------------------------------------------
 
-## 4. Cómo arrancar (cuando exista Compose)
-
-Cuando en la raíz del repo haya `docker-compose.yml` (y Dockerfiles), el arranque será:
+## 4. Cómo arrancar
 
 ```bat
 cd C:\Users\pw-gdelacruz\Documents\privado\Weddinglage
@@ -82,17 +78,26 @@ notepad .env
 docker compose up --build
 ```
 
-En `.env` cambia solo las contraseñas locales. **No** subas `.env` a Git (ya está en `.gitignore`).
+En `.env` cambia contraseñas locales y `TOKEN_PEPPER`. **No** subas `.env` a Git (ya está en `.gitignore`).
 
-### URLs previstas
+Compose fija hosts internos (`postgres`, `minio`, `mailhog`); no hace falta `POSTGRES_HOST` en `.env`.
+
+### URLs
 
 | URL | Qué es |
 |-----|--------|
-| http://localhost | Web (Angular vía Nginx) |
-| http://localhost/api/actuator/health | Salud de la API (nombre exacto según Fase 0) |
+| http://localhost | Web (Nginx → SPA) |
+| http://localhost/api/actuator/health | Salud de la API |
 | http://localhost/admin | Panel admin |
-| http://localhost:9001 | Consola MinIO (si se publica el puerto) |
-| http://localhost:8025 | Mailhog (correo de prueba, opcional) |
+| http://localhost:9000 | Object storage S3Mock (API) |
+| http://localhost:8025 | Mailhog (correo de prueba) |
+| localhost:5432 | Postgres (debug local) |
+
+### Cómo está cableado Nginx
+
+- Puerto **80** en el host → servicio `nginx` (`nginx:alpine` + `docker/nginx/default.conf`)
+- `location /api/` → `http://api:8080/api/` (headers Host / X-Forwarded-* y `Set-Cookie`)
+- `location /` → `http://web:80/` (contenedor Angular/nginx)
 
 ### Parar
 
@@ -108,15 +113,17 @@ docker compose down -v
 
 ------------------------------------------------------------------------
 
-## 5. Qué servicios levantará Compose
+## 5. Servicios de Compose
 
 | Servicio | Rol |
 |----------|-----|
-| `nginx` | SPA + proxy `/api` (mismo origen → cookies) |
+| `nginx` | Edge: SPA + proxy `/api` (mismo origen → cookies) |
+| `web` | Frontend Angular servido en `:80` |
 | `api` | Spring Boot |
 | `postgres` | Base de datos + Flyway |
 | `minio` | Fotos (S3-compatible) |
-| `mailhog` | Correo en desarrollo (opcional) |
+| `minio-init` | Crea el bucket una vez |
+| `mailhog` | Correo en desarrollo |
 
 Misma idea en local y luego en VPS; en local no hace falta HTTPS todavía.
 
@@ -126,11 +133,12 @@ Misma idea en local y luego en VPS; en local no hace falta HTTPS todavía.
 
 | Problema | Qué hacer |
 |----------|-----------|
-| `no configuration file provided` / no encuentra Compose | Aún no está Fase 0: falta `docker-compose.yml` en la raíz |
-| Docker no responde | Abre Docker Desktop y espera a que esté “Running” |
-| Puerto 80 ocupado | Cuando exista Compose, cambia el mapeo (p. ej. `"8080:80"`) y entra en http://localhost:8080 |
-| `pull` / `push` pide login | Autentica GitHub en Windows (`gh auth login` o Credential Manager), sin pegar el PAT en el `remote` |
-| Carpetas `frontend`/`backend` vacías | Normal hoy; el scaffold Angular/Spring llega con la Fase 0 |
+| `no configuration file provided` | Ejecutá los comandos desde la raíz del repo (`Weddinglage`) |
+| Docker no responde | Abrí Docker Desktop y esperá a que esté “Running” |
+| Puerto 80 ocupado | Cambiá el mapeo de `nginx` a p. ej. `"8080:80"` y entrá en http://localhost:8080 |
+| Healthcheck de `api` falla | La JRE puede no traer `curl`/`wget`; el contenedor igual puede estar sano — revisá logs con `docker compose logs api` |
+| Falta `frontend/Dockerfile` | El build de `web` lo necesita; regeneralo o pedí el scaffold |
+| `pull` / `push` pide login | Autenticá GitHub en Windows (`gh auth login` o Credential Manager), sin pegar el PAT en el `remote` |
 
 ------------------------------------------------------------------------
 
@@ -139,8 +147,8 @@ Misma idea en local y luego en VPS; en local no hace falta HTTPS todavía.
 - [ ] Repo en `Documents\privado\Weddinglage`  
 - [ ] `git pull origin main` OK  
 - [ ] Docker Desktop OK  
-- [ ] Esperar (o implementar) Fase 0: Compose + Angular + Spring mínimos  
-- [ ] `copy .env.example .env` y `docker compose up --build`  
+- [ ] `copy .env.example .env` y editar secretos  
+- [ ] `docker compose up --build`  
 - [ ] Abrir http://localhost  
 
 ------------------------------------------------------------------------

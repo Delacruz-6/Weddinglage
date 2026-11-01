@@ -1,0 +1,39 @@
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.iml
+
+# Env / secrets
+.env
+.env.local
+*.pem
+
+# Node / Angular
+node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/tmp/
+
+# Java / Spring
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+!**/gradle-wrapper.jar
+!**/maven-wrapper.jar
+
+# Docker volumes / local data
+docker/data/
+minio-data/
+postgres-data/
+
+# Logs / coverage
+*.log
+coverage/
+.nyc_output/
+
+# Agent scratch (not part of the product repo)
+agent-tools/

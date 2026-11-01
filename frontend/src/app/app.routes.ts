@@ -12,22 +12,15 @@ export const routes: Routes = [
       import('./pages/rsvp-edit/rsvp-edit.component').then((m) => m.RsvpEditComponent)
   },
   {
-    path: 'rsvp/:inviteCode',
-    loadComponent: () => import('./pages/rsvp/rsvp.component').then((m) => m.RsvpComponent)
-  },
-  {
     path: 'rsvp',
     loadComponent: () => import('./pages/rsvp/rsvp.component').then((m) => m.RsvpComponent)
   },
+  { path: 'rsvp/:legacyCode', redirectTo: 'rsvp' },
+  { path: 'ornament', redirectTo: '' },
+  { path: 'ornament/:legacyCode', redirectTo: '' },
   {
-    path: 'ornament/:inviteCode',
-    loadComponent: () =>
-      import('./pages/ornament/ornament.component').then((m) => m.OrnamentComponent)
-  },
-  {
-    path: 'ornament',
-    loadComponent: () =>
-      import('./pages/ornament/ornament.component').then((m) => m.OrnamentComponent)
+    path: 'fotos',
+    loadComponent: () => import('./pages/fotos/fotos.component').then((m) => m.FotosComponent)
   },
   {
     path: 'upload',
@@ -63,13 +56,7 @@ export const routes: Routes = [
             (m) => m.ConfigurationComponent
           )
       },
-      {
-        path: 'invitations',
-        loadComponent: () =>
-          import('./pages/admin/invitations/invitations.component').then(
-            (m) => m.InvitationsComponent
-          )
-      },
+      { path: 'invitations', redirectTo: 'exports', pathMatch: 'full' },
       {
         path: 'photos',
         loadComponent: () =>
@@ -79,6 +66,11 @@ export const routes: Routes = [
         path: 'timeline',
         loadComponent: () =>
           import('./pages/admin/timeline/timeline.component').then((m) => m.TimelineComponent)
+      },
+      {
+        path: 'playlist',
+        loadComponent: () =>
+          import('./pages/admin/playlist/playlist.component').then((m) => m.PlaylistComponent)
       },
       {
         path: 'exports',

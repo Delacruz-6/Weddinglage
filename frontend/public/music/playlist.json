@@ -1,0 +1,10 @@
+{
+  "name": "Nuestra playlist",
+  "tracks": [
+    {
+      "id": "merry-christmas",
+      "title": "Merry Christmas",
+      "src": "/music/merry-christmas.mp3"
+    }
+  ]
+}

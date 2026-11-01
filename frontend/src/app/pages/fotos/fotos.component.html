@@ -1,0 +1,49 @@
+<div class="app" [class.locked]="!token()">
+  <header class="top">
+    <p class="brand">Weddinglage</p>
+    <h1>Compartir fotos</h1>
+    <p class="sub">Subí recuerdos del día. Las publicamos en la galería tras revisarlas.</p>
+  </header>
+
+  <main class="stage">
+    @if (lastPreview(); as preview) {
+      <img class="preview" [src]="preview" alt="Vista previa" />
+    } @else {
+      <div class="placeholder">
+        <span class="cam" aria-hidden="true">◎</span>
+        <p>Elegí una foto o abrí la cámara</p>
+      </div>
+    }
+
+    @if (uploading()) {
+      <p class="status">Subiendo…</p>
+    } @else if (message()) {
+      <p class="status ok">{{ message() }}</p>
+    }
+    @if (error()) {
+      <p class="status err">{{ error() }}</p>
+    }
+    @if (sentCount() > 0) {
+      <p class="count">{{ sentCount() }} foto{{ sentCount() === 1 ? '' : 's' }} enviada{{ sentCount() === 1 ? '' : 's' }}</p>
+    }
+  </main>
+
+  @if (token()) {
+    <nav class="dock" aria-label="Acciones">
+      <label class="fab">
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          (change)="onFile($event)"
+          [disabled]="uploading()"
+        />
+        <span>{{ uploading() ? 'Esperá…' : 'Subir foto' }}</span>
+      </label>
+      <label class="secondary">
+        <input type="file" accept="image/*" (change)="onFile($event)" [disabled]="uploading()" />
+        <span>Galería del teléfono</span>
+      </label>
+    </nav>
+  }
+</div>

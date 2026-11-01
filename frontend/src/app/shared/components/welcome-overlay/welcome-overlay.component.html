@@ -1,13 +1,171 @@
-<div class="overlay" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
-  <div class="panel">
-    <p class="eyebrow">Bienvenidos</p>
-    <h1 id="welcome-title">{{ partnerNames || 'Nombres pendientes' }}</h1>
-    @if (message) {
-      <p class="message">{{ message }}</p>
-    } @else {
-      <p class="message">Os esperamos en una celebración llena de magia navideña.</p>
+<div
+  class="overlay"
+  [class.opening]="opening()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="welcome-title"
+  (animationend)="onAnimationEnd($event)"
+>
+  <!-- Filtro SVG para el borde irregular del papel de la carta -->
+  <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="wlc-deckle" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="4" seed="9" result="t" />
+        <feDisplacementMap in="SourceGraphic" in2="t" scale="7" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="paper" aria-hidden="true"></div>
+
+  <div class="envelope">
+    <!-- Interior del sobre -->
+    <div class="body" aria-hidden="true"></div>
+
+    <!-- Carta: asoma por la V -->
+    <div class="letter" aria-hidden="true">
+      <span class="letter-eyebrow">Navidad · Reyes · Boda</span>
+      <span class="letter-names">{{ partnerNames || 'Guille & Nerea' }}</span>
+      <span class="letter-rule"></span>
+      <span class="letter-date">{{ weddingDate }}</span>
+    </div>
+
+    <!-- Frontal con muesca en V -->
+    <div class="front" aria-hidden="true">
+      <div class="front-face"></div>
+    </div>
+
+    <!-- Solapa -->
+    <div class="flap" aria-hidden="true">
+      <div class="flap-face"></div>
+    </div>
+
+    <!-- Sello de lacre (SVG con borde orgánico, relieve y brillo) -->
+    <button
+      type="button"
+      class="seal-btn"
+      [attr.aria-label]="'Abrir la invitación de ' + (partnerNames || 'la pareja')"
+      [attr.aria-busy]="opening()"
+      [disabled]="opening()"
+      (click)="openSeal()"
+    >
+      <svg class="seal" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id="wlc-wax" cx="35%" cy="28%" r="85%">
+            <stop offset="0" stop-color="#b9566a" />
+            <stop offset="0.36" stop-color="#85283a" />
+            <stop offset="0.78" stop-color="#561624" />
+            <stop offset="1" stop-color="#3a0f19" />
+          </radialGradient>
+          <radialGradient id="wlc-stamp" cx="42%" cy="34%" r="78%">
+            <stop offset="0" stop-color="#912e41" />
+            <stop offset="1" stop-color="#47111e" />
+          </radialGradient>
+
+          <!-- Borde irregular de la cera -->
+          <filter id="wlc-wax-edge" x="-25%" y="-25%" width="150%" height="150%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.028" numOctaves="3" seed="4" result="n" />
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+
+          <!-- Brillo especular sobre la cera -->
+          <filter id="wlc-wax-light" x="-25%" y="-25%" width="150%" height="150%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3.2" result="blur" />
+            <feSpecularLighting
+              in="blur"
+              surfaceScale="5"
+              specularConstant="0.9"
+              specularExponent="22"
+              lighting-color="#ffd9cf"
+              result="spec"
+            >
+              <fePointLight x="62" y="46" z="110" />
+            </feSpecularLighting>
+            <feComposite in="spec" in2="SourceAlpha" operator="in" result="specIn" />
+            <feComposite in="SourceGraphic" in2="specIn" operator="arithmetic" k1="0" k2="1" k3="0.55" k4="0" />
+          </filter>
+        </defs>
+
+        <g filter="url(#wlc-wax-light)">
+          <g filter="url(#wlc-wax-edge)" fill="url(#wlc-wax)">
+            <!-- Disco principal + 4 lóbulos -->
+            <circle cx="100" cy="100" r="62" />
+            <circle cx="136.8" cy="63.2" r="16" />
+            <circle cx="136.8" cy="136.8" r="16" />
+            <circle cx="63.2" cy="136.8" r="16" />
+            <circle cx="63.2" cy="63.2" r="16" />
+            <!-- Gotas / salpicaduras -->
+            <ellipse cx="172" cy="70" rx="8" ry="6.5" />
+            <circle cx="183" cy="108" r="4" />
+            <ellipse cx="160" cy="152" rx="11" ry="7.5" />
+            <ellipse cx="40" cy="166" rx="6" ry="9" />
+            <circle cx="24" cy="128" r="4.2" />
+            <circle cx="70" cy="20" r="4" />
+            <circle cx="150" cy="188" r="2.6" />
+            <circle cx="18" cy="82" r="2.8" />
+          </g>
+        </g>
+
+        <!-- Sello hundido -->
+        <circle cx="100" cy="99" r="47" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="2.2" />
+        <circle cx="100" cy="100" r="47" fill="url(#wlc-stamp)" />
+        <circle cx="100" cy="101.4" r="47" fill="none" stroke="rgba(255,205,195,0.3)" stroke-width="1.1" />
+        <circle cx="100" cy="100" r="43" fill="none" stroke="rgba(255,230,210,0.22)" stroke-width="0.7" />
+
+        <!-- Laurel -->
+        <svg x="53" y="53" width="94" height="94" viewBox="0 0 100 100" class="laurel">
+          <g class="branch">
+            <path d="M37.6 80.6 A33 33 0 0 1 22.6 31.5" />
+            @for (leaf of leaves; track $index) {
+              <ellipse
+                [attr.cx]="leaf.x"
+                [attr.cy]="leaf.y"
+                rx="2.3"
+                ry="5.4"
+                [attr.transform]="'rotate(' + leaf.rot + ' ' + leaf.x + ' ' + leaf.y + ')'"
+              />
+            }
+          </g>
+          <g class="branch" transform="matrix(-1 0 0 1 100 0)">
+            <path d="M37.6 80.6 A33 33 0 0 1 22.6 31.5" />
+            @for (leaf of leaves; track $index) {
+              <ellipse
+                [attr.cx]="leaf.x"
+                [attr.cy]="leaf.y"
+                rx="2.3"
+                ry="5.4"
+                [attr.transform]="'rotate(' + leaf.rot + ' ' + leaf.x + ' ' + leaf.y + ')'"
+              />
+            }
+          </g>
+        </svg>
+
+        <text x="100" y="110" text-anchor="middle" class="mono">{{ initials().left }}/{{ initials().right }}</text>
+      </svg>
+    </button>
+
+    <div class="stage">
+      <h1 class="title" id="welcome-title">
+        <span class="line l1">Estáis</span>
+        <span class="line l2">cordialmente</span>
+        <span class="line l3">invitados</span>
+      </h1>
+    </div>
+
+    <p class="hint">Tocad el sello</p>
+  </div>
+
+  <div class="snow" aria-hidden="true">
+    @for (flake of snowflakes; track flake.id) {
+      <span
+        class="flake"
+        [class.big]="flake.id % 4 === 0"
+        [style.left]="flake.left"
+        [style.--size]="flake.size"
+        [style.--delay]="flake.delay"
+        [style.--duration]="flake.duration"
+        [style.--drift]="flake.drift"
+      ></span>
     }
-    <button type="button" class="cta" (click)="enter()">Entrar en nuestra Navidad</button>
-    <button type="button" class="skip" (click)="enter()">Saltar</button>
   </div>
 </div>

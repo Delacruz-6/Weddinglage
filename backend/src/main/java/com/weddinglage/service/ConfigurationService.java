@@ -31,6 +31,10 @@ public class ConfigurationService {
                 cfg.getStoryHtml(),
                 cfg.getGiftIban(),
                 cfg.getGiftHolder(),
+                cfg.getHeroImageUrl(),
+                cfg.getStoryImageUrl(),
+                cfg.getSpotifyPlaylistUrl(),
+                cfg.getOrnamentSuggestion(),
                 new PublicWeddingDto.SectionFlagsDto(
                         cfg.isShowStory(),
                         cfg.isShowVenue(),
@@ -39,7 +43,13 @@ public class ConfigurationService {
                         cfg.isShowGifts(),
                         cfg.isShowRsvp(),
                         cfg.isShowPhotos(),
-                        cfg.isShowOrnaments()));
+                        cfg.isShowOrnaments()),
+                new PublicWeddingDto.RsvpFormConfigDto(
+                        cfg.isRsvpShowNotes(),
+                        cfg.isRsvpShowDietary(),
+                        cfg.isRsvpShowTransport(),
+                        cfg.isRsvpShowSongs(),
+                        cfg.isRsvpShowChildren()));
     }
 
     @Transactional(readOnly = true)
@@ -56,6 +66,10 @@ public class ConfigurationService {
         cfg.setStoryHtml(dto.storyHtml());
         cfg.setGiftIban(dto.giftIban());
         cfg.setGiftHolder(dto.giftHolder());
+        cfg.setHeroImageUrl(blankToNull(dto.heroImageUrl()));
+        cfg.setStoryImageUrl(blankToNull(dto.storyImageUrl()));
+        cfg.setSpotifyPlaylistUrl(blankToNull(dto.spotifyPlaylistUrl()));
+        cfg.setOrnamentSuggestion(blankToNull(dto.ornamentSuggestion()));
         cfg.setShowStory(dto.showStory());
         cfg.setShowVenue(dto.showVenue());
         cfg.setShowTimeline(dto.showTimeline());
@@ -64,6 +78,11 @@ public class ConfigurationService {
         cfg.setShowRsvp(dto.showRsvp());
         cfg.setShowPhotos(dto.showPhotos());
         cfg.setShowOrnaments(dto.showOrnaments());
+        cfg.setRsvpShowNotes(dto.rsvpShowNotes());
+        cfg.setRsvpShowDietary(dto.rsvpShowDietary());
+        cfg.setRsvpShowTransport(dto.rsvpShowTransport());
+        cfg.setRsvpShowSongs(dto.rsvpShowSongs());
+        cfg.setRsvpShowChildren(dto.rsvpShowChildren());
         cfg.setUpdatedAt(Instant.now());
         repository.save(cfg);
         auditService.record(actor, "CONFIG_UPDATE", "WeddingConfiguration", "1", null);
@@ -75,6 +94,13 @@ public class ConfigurationService {
                 .orElseThrow(() -> new ApiException("NOT_FOUND", "Configuración no encontrada", HttpStatus.NOT_FOUND));
     }
 
+    private static String blankToNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
+    }
+
     private static WeddingConfigurationDto toDto(WeddingConfiguration cfg) {
         return new WeddingConfigurationDto(
                 cfg.getPartnerNames(),
@@ -83,6 +109,10 @@ public class ConfigurationService {
                 cfg.getStoryHtml(),
                 cfg.getGiftIban(),
                 cfg.getGiftHolder(),
+                cfg.getHeroImageUrl(),
+                cfg.getStoryImageUrl(),
+                cfg.getSpotifyPlaylistUrl(),
+                cfg.getOrnamentSuggestion(),
                 cfg.isShowStory(),
                 cfg.isShowVenue(),
                 cfg.isShowTimeline(),
@@ -90,6 +120,11 @@ public class ConfigurationService {
                 cfg.isShowGifts(),
                 cfg.isShowRsvp(),
                 cfg.isShowPhotos(),
-                cfg.isShowOrnaments());
+                cfg.isShowOrnaments(),
+                cfg.isRsvpShowNotes(),
+                cfg.isRsvpShowDietary(),
+                cfg.isRsvpShowTransport(),
+                cfg.isRsvpShowSongs(),
+                cfg.isRsvpShowChildren());
     }
 }

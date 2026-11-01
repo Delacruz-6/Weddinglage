@@ -14,13 +14,13 @@ public interface RsvpRepository extends JpaRepository<Rsvp, Long> {
 
     Optional<Rsvp> findByEditTokenHash(String editTokenHash);
 
-    @EntityGraph(attributePaths = {"invitation", "dietaryRequirements", "transportReservations", "songSuggestions"})
+    @EntityGraph(attributePaths = {"invitation", "dietaryRequirements", "transportReservations", "songSuggestions", "childGuests"})
     Optional<Rsvp> findDetailedByEditTokenHash(String editTokenHash);
 
-    @EntityGraph(attributePaths = {"invitation", "dietaryRequirements", "transportReservations", "songSuggestions"})
+    @EntityGraph(attributePaths = {"invitation", "dietaryRequirements", "transportReservations", "songSuggestions", "childGuests"})
     Optional<Rsvp> findDetailedById(Long id);
 
-    @EntityGraph(attributePaths = {"invitation", "dietaryRequirements", "transportReservations", "songSuggestions"})
+    @EntityGraph(attributePaths = {"invitation", "dietaryRequirements", "transportReservations", "songSuggestions", "childGuests"})
     @Query("select r from Rsvp r")
     List<Rsvp> findAllDetailedBy();
 

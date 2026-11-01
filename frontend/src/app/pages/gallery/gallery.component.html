@@ -1,10 +1,13 @@
-<app-snow />
 <div class="wrap">
-  <a routerLink="/" class="back">← Inicio</a>
-  <h1>Galería</h1>
+  <a routerLink="/" class="back">← Invitación</a>
+  <header class="intro">
+    <p class="eyebrow">Recuerdos</p>
+    <h1>Galería</h1>
+    <p class="lede">Fotos compartidas por los invitados, publicadas tras revisión.</p>
+  </header>
 
   @if (loading()) {
-    <p>Cargando…</p>
+    <p class="status">Cargando…</p>
   } @else if (photos().length) {
     <div class="grid">
       @for (p of photos(); track p.id) {
@@ -14,6 +17,6 @@
       }
     </div>
   } @else {
-    <p class="empty">{{ emptyMessage() || error() }}</p>
+    <p class="empty">{{ emptyMessage() || error() || 'Todavía no hay fotos publicadas.' }}</p>
   }
 </div>

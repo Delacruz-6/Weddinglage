@@ -2,7 +2,6 @@ package com.weddinglage.web.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
@@ -21,31 +20,39 @@ public final class RsvpDtos {
     public record SongDto(String title, String artist) {
     }
 
+    public record ChildDto(String fullName, Integer age, String intolerances) {
+    }
+
     public record RsvpSubmitRequest(
-            @NotBlank String inviteCode,
+            String inviteCode,
+            String fullName,
             @NotNull Boolean attending,
             @Min(0) int adults,
             @Min(0) int children,
             String notes,
             @Valid List<DietaryDto> dietaryRequirements,
             @Valid List<TransportDto> transport,
-            @Valid List<SongDto> songs
+            @Valid List<SongDto> songs,
+            @Valid List<ChildDto> childGuests
     ) {
     }
 
     public record RsvpUpdateRequest(
+            String fullName,
             @NotNull Boolean attending,
             @Min(0) int adults,
             @Min(0) int children,
             String notes,
             @Valid List<DietaryDto> dietaryRequirements,
             @Valid List<TransportDto> transport,
-            @Valid List<SongDto> songs
+            @Valid List<SongDto> songs,
+            @Valid List<ChildDto> childGuests
     ) {
     }
 
     public record RsvpViewDto(
             String inviteCode,
+            String fullName,
             boolean attending,
             int adults,
             int children,
@@ -54,7 +61,8 @@ public final class RsvpDtos {
             Instant updatedAt,
             List<DietaryDto> dietaryRequirements,
             List<TransportViewDto> transport,
-            List<SongDto> songs
+            List<SongDto> songs,
+            List<ChildDto> childGuests
     ) {
     }
 

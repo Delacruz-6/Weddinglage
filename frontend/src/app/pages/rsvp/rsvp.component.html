@@ -1,83 +1,178 @@
-<app-snow />
-<div class="wrap">
-  <a routerLink="/" class="back">← Inicio</a>
-  <h1>Confirmación de asistencia</h1>
+<div class="wash" aria-hidden="true"></div>
+<div class="page">
+  <a routerLink="/" class="back">← Volver a la invitación</a>
+
+  <header class="intro">
+    <p class="eyebrow">Confirmación</p>
+    <h1>¿Nos acompañáis?</h1>
+    <p class="lede">
+      Solo necesitamos <strong>nombre y apellidos</strong>, pensado para que sea
+      fácil para toda la familia.
+    </p>
+  </header>
 
   @if (successToken()) {
-    <div class="success">
-      <p>¡Gracias! Hemos recibido vuestra respuesta.</p>
-      <p>Guardad este enlace para editarla más tarde.</p>
-      <button type="button" class="btn" (click)="goEdit()">Editar mi RSVP</button>
+    <div class="panel success" role="status">
+      <p class="success-title">¡Gracias! Ya tenemos vuestra confirmación.</p>
+      <p>
+        Guardad el enlace de edición por si más adelante cambia algo
+        (asistentes, niños o intolerancias).
+      </p>
+      <button type="button" class="btn primary" (click)="goEdit()">Abrir mi enlace de edición</button>
     </div>
   } @else {
-    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
-      <label>
-        Código de invitación
-        <input formControlName="inviteCode" autocomplete="off" />
-      </label>
-
-      <fieldset>
-        <legend>¿Vendréis?</legend>
-        <label class="radio">
-          <input type="radio" formControlName="attending" [value]="true" /> Sí
+    <form [formGroup]="form" (ngSubmit)="submit()" class="panel form" novalidate>
+      <section class="block">
+        <h2>¿Quién confirma?</h2>
+        <label class="field">
+          <span>Nombre y apellidos</span>
+          <input
+            formControlName="fullName"
+            autocomplete="name"
+            placeholder="Ej. María López García"
+          />
         </label>
-        <label class="radio">
-          <input type="radio" formControlName="attending" [value]="false" /> No
-        </label>
-      </fieldset>
-
-      <div class="row">
-        <label>
-          Adultos
-          <input type="number" min="0" formControlName="adults" />
-        </label>
-        <label>
-          Niños
-          <input type="number" min="0" formControlName="children" />
-        </label>
-      </div>
-
-      <label>
-        Notas
-        <textarea formControlName="notes" rows="3"></textarea>
-      </label>
-
-      <fieldset formArrayName="dietaryRequirements">
-        <legend>Requisitos alimentarios (opcional)</legend>
-        @for (d of dietary.controls; track $index; let i = $index) {
-          <div class="row" [formGroupName]="i">
-            <input formControlName="type" placeholder="Tipo (p. ej. alergia)" />
-            <input formControlName="detail" placeholder="Detalle" />
-          </div>
+        @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+          <p class="field-error">Indicad nombre y apellidos.</p>
         }
-      </fieldset>
+      </section>
 
-      <fieldset formArrayName="transport">
-        <legend>Transporte (opcional)</legend>
-        @for (t of transport.controls; track $index; let i = $index) {
-          <div class="row" [formGroupName]="i">
-            <input formControlName="busSlot" placeholder="Turno bus" />
-            <input formControlName="stopId" placeholder="Parada" />
-            <input type="number" min="0" formControlName="seats" placeholder="Asientos" />
-          </div>
+      <section class="block">
+        <h2>Asistencia</h2>
+        <div class="choice" role="radiogroup" aria-label="¿Vendréis?">
+          <button
+            type="button"
+            class="choice-btn"
+            [class.active]="form.controls.attending.value === true"
+            (click)="setAttending(true)"
+          >
+            <span class="choice-label">Sí, allí estaremos</span>
+            <span class="choice-sub">Confirmamos asistencia</span>
+          </button>
+          <button
+            type="button"
+            class="choice-btn"
+            [class.active]="form.controls.attending.value === false"
+            (click)="setAttending(false)"
+          >
+            <span class="choice-label">No podremos ir</span>
+            <span class="choice-sub">Os lo agradecemos igual</span>
+          </button>
+        </div>
+      </section>
+
+      @if (form.controls.attending.value) {
+        <section class="block">
+          <h2>Adultos</h2>
+          <label class="field narrow">
+            <span>Número de adultos</span>
+            <input type="number" min="0" formControlName="adults" inputmode="numeric" />
+          </label>
+        </section>
+
+        @if (formConfig().showChildren) {
+          <section class="block" formArrayName="childGuests">
+            <h2>Niños</h2>
+            <p class="hint">Si vienen niños, añadid uno por uno: nombre, edad e intolerancias.</p>
+
+            @for (c of childGuests.controls; track $index; let i = $index) {
+              <div class="child-card" [formGroupName]="i">
+                <label class="field">
+                  <span>Nombre del niño/a</span>
+                  <input formControlName="fullName" placeholder="Nombre y apellidos" />
+                </label>
+                <div class="row">
+                  <label class="field">
+                    <span>Edad</span>
+                    <input type="number" min="0" max="17" formControlName="age" inputmode="numeric" />
+                  </label>
+                  <label class="field grow">
+                    <span>Intolerancias / alergias</span>
+                    <input formControlName="intolerances" placeholder="Ninguna, lactose, frutos secos…" />
+                  </label>
+                </div>
+                <button type="button" class="linkish" (click)="removeChild(i)">Quitar niño/a</button>
+              </div>
+            }
+
+            <button type="button" class="add-row" (click)="addChild()">+ Añadir niño/a</button>
+          </section>
         }
-      </fieldset>
 
-      <fieldset formArrayName="songs">
-        <legend>Canciones sugeridas (opcional)</legend>
-        @for (s of songs.controls; track $index; let i = $index) {
-          <div class="row" [formGroupName]="i">
-            <input formControlName="title" placeholder="Título" />
-            <input formControlName="artist" placeholder="Artista" />
-          </div>
+        @if (hasOptionalBlocks()) {
+          <section class="block optional">
+            <button type="button" class="disclosure" (click)="toggleExtras()" [attr.aria-expanded]="showExtras()">
+              <span>{{ showExtras() ? 'Ocultar detalles opcionales' : 'Añadir detalles opcionales' }}</span>
+              <span class="chev" aria-hidden="true">{{ showExtras() ? '−' : '+' }}</span>
+            </button>
+
+            @if (showExtras()) {
+              <div class="extras">
+                @if (formConfig().showNotes) {
+                  <label class="field">
+                    <span>Notas para los novios</span>
+                    <textarea formControlName="notes" rows="3" placeholder="Mensaje, movilidad, horarios…"></textarea>
+                  </label>
+                }
+
+                @if (formConfig().showDietary) {
+                  <div formArrayName="dietaryRequirements" class="subblock">
+                    <h3>Alimentación de adultos</h3>
+                    <p class="hint soft">Alergias o necesidades de los adultos (los niños van arriba).</p>
+                    @for (d of dietary.controls; track $index; let i = $index) {
+                      <div class="dietary-row" [formGroupName]="i">
+                        <input formControlName="type" placeholder="Tipo (alergia, vegano…)" />
+                        <input formControlName="detail" placeholder="Detalle" />
+                        <button type="button" class="linkish" (click)="removeDietary(i)">Quitar</button>
+                      </div>
+                    }
+                    <button type="button" class="add-row" (click)="addDietary()">+ Añadir otra</button>
+                  </div>
+                }
+
+                @if (formConfig().showTransport) {
+                  <div formArrayName="transport" class="subblock">
+                    <h3>Autobús</h3>
+                    <p class="hint soft">Turnos habituales: 18:00 o 22:00.</p>
+                    @for (t of transport.controls; track $index; let i = $index) {
+                      <div class="row triple" [formGroupName]="i">
+                        <input formControlName="busSlot" placeholder="Turno (18:00 / 22:00)" />
+                        <input formControlName="stopId" placeholder="Parada" />
+                        <input type="number" min="0" formControlName="seats" placeholder="Asientos" inputmode="numeric" />
+                      </div>
+                    }
+                  </div>
+                }
+
+                @if (formConfig().showSongs) {
+                  <div formArrayName="songs" class="subblock">
+                    <h3>Una canción para la fiesta</h3>
+                    @for (s of songs.controls; track $index; let i = $index) {
+                      <div class="row" [formGroupName]="i">
+                        <input formControlName="title" placeholder="Título" />
+                        <input formControlName="artist" placeholder="Artista" />
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </section>
         }
-      </fieldset>
-
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
+      } @else if (formConfig().showNotes) {
+        <section class="block">
+          <label class="field">
+            <span>Un mensaje (opcional)</span>
+            <textarea formControlName="notes" rows="3" placeholder="Si queréis dejarles unas palabras…"></textarea>
+          </label>
+        </section>
       }
 
-      <button type="submit" class="btn" [disabled]="submitting()">
+      @if (error()) {
+        <p class="error" role="alert">{{ error() }}</p>
+      }
+
+      <button type="submit" class="btn primary wide" [disabled]="submitting()">
         {{ submitting() ? 'Enviando…' : 'Enviar confirmación' }}
       </button>
     </form>

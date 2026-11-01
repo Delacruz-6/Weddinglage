@@ -9,18 +9,25 @@
   max-width: 36rem;
   margin: 0 auto;
   padding: 2rem 1.25rem 4rem;
-  color: var(--color-snow);
+  color: var(--color-ink);
 }
 
 .back {
-  color: var(--color-gold);
+  color: var(--color-burgundy);
   text-decoration: none;
+  font-weight: 600;
 }
 
 h1 {
-  font-family: var(--font-display);
-  color: var(--color-gold);
+  font-family: var(--font-script);
+  color: var(--color-burgundy);
   margin: 1rem 0;
+  font-weight: 400;
+  font-size: clamp(2.2rem, 8vw, 3rem);
+}
+
+.code {
+  color: var(--color-muted);
 }
 
 .form {
@@ -37,53 +44,86 @@ input,
 textarea {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid color-mix(in srgb, var(--color-gold) 45%, transparent);
-  background: color-mix(in srgb, var(--color-dark) 55%, transparent);
-  color: var(--color-snow);
+  border: 1px solid color-mix(in srgb, var(--color-burgundy) 28%, transparent);
+  background: color-mix(in srgb, #fff 70%, var(--color-cream));
+  color: var(--color-ink);
   padding: 0.65rem 0.75rem;
-  font: inherit;
 }
 
 fieldset {
-  border: 1px solid color-mix(in srgb, var(--color-gold) 35%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-burgundy) 20%, transparent);
   padding: 0.85rem;
-  display: grid;
-  gap: 0.65rem;
+  margin: 0;
+}
+
+legend {
+  font-family: var(--font-display);
+  color: var(--color-burgundy);
+  padding: 0 0.35rem;
 }
 
 .row {
   display: grid;
-  gap: 0.5rem;
+  gap: 0.55rem;
 
   @media (min-width: 640px) {
-    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-.radio {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+.hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-muted);
 }
 
-.btn {
+.dietary-row,
+.child-row {
+  display: grid;
+  gap: 0.45rem;
+  align-items: center;
+
+  @media (min-width: 640px) {
+    grid-template-columns: 1.2fr 5rem 1fr auto;
+  }
+}
+
+.dietary-row {
+  @media (min-width: 640px) {
+    grid-template-columns: 1fr 1.2fr auto;
+  }
+}
+
+.add-row,
+.linkish {
   justify-self: start;
-  border: 1px solid var(--color-gold);
-  background: var(--color-burgundy);
-  color: var(--color-snow);
-  padding: 0.75rem 1.2rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-burgundy);
   cursor: pointer;
   font: inherit;
+  padding: 0.25rem 0;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.add-row {
+  text-decoration: none;
+  border: 1px dashed color-mix(in srgb, var(--color-burgundy) 40%, transparent);
+  padding: 0.55rem 0.75rem;
+  width: 100%;
+  text-align: center;
 }
 
 .error {
-  color: #f3c1c8;
+  color: var(--color-burgundy-deep);
 }
 
-.ok {
-  color: var(--color-gold);
-}
-
-.code {
-  margin-bottom: 1rem;
+button[type='submit'] {
+  border: 0;
+  background: var(--color-burgundy);
+  color: #fff8f2;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
 }

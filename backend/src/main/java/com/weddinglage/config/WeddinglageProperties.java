@@ -11,7 +11,10 @@ public class WeddinglageProperties {
     private int maxFailedLogins = 5;
     private int lockoutMinutes = 15;
     private int rsvpRateLimitPerMinute = 30;
+    /** Soft cap for open (no invite-code) RSVPs. */
+    private int openRsvpMaxAttendees = 12;
     private final Minio minio = new Minio();
+    private final Spotify spotify = new Spotify();
 
     public String getTokenPepper() {
         return tokenPepper;
@@ -61,8 +64,45 @@ public class WeddinglageProperties {
         this.rsvpRateLimitPerMinute = rsvpRateLimitPerMinute;
     }
 
+    public int getOpenRsvpMaxAttendees() {
+        return openRsvpMaxAttendees;
+    }
+
+    public void setOpenRsvpMaxAttendees(int openRsvpMaxAttendees) {
+        this.openRsvpMaxAttendees = openRsvpMaxAttendees;
+    }
+
     public Minio getMinio() {
         return minio;
+    }
+
+    public Spotify getSpotify() {
+        return spotify;
+    }
+
+    public static class Spotify {
+        private String clientId = "";
+        private String clientSecret = "";
+
+        public String getClientId() {
+            return clientId;
+        }
+
+        public void setClientId(String clientId) {
+            this.clientId = clientId;
+        }
+
+        public String getClientSecret() {
+            return clientSecret;
+        }
+
+        public void setClientSecret(String clientSecret) {
+            this.clientSecret = clientSecret;
+        }
+
+        public boolean isConfigured() {
+            return clientId != null && !clientId.isBlank() && clientSecret != null && !clientSecret.isBlank();
+        }
     }
 
     public static class Minio {

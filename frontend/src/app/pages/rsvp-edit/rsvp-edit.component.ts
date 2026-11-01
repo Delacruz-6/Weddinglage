@@ -1,14 +1,19 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+
+type ChildGuestForm = FormGroup<{
+  fullName: FormControl<string>;
+  age: FormControl<number | null>;
+  intolerances: FormControl<string>;
+}>;
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PublicApiService } from '../../core/services/public-api.service';
-import { SnowComponent } from '../../shared/components/snow/snow.component';
 
 @Component({
   selector: 'app-rsvp-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, SnowComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './rsvp-edit.component.html',
   styleUrl: './rsvp-edit.component.scss'
 })
@@ -21,14 +26,15 @@ export class RsvpEditComponent implements OnInit {
   readonly saving = signal(false);
   readonly error = signal<string | null>(null);
   readonly saved = signal(false);
-  readonly inviteCode = signal('');
+  readonly displayName = signal<string | null>(null);
   private editToken = '';
 
   readonly form = this.fb.nonNullable.group({
+    fullName: [''],
     attending: [true, Validators.required],
     adults: [1, [Validators.required, Validators.min(0)]],
-    children: [0, [Validators.required, Validators.min(0)]],
     notes: [''],
+    childGuests: this.fb.array<ChildGuestForm>([]),
     dietaryRequirements: this.fb.array([
       this.fb.nonNullable.group({ type: [''], detail: [''] })
     ]),
@@ -52,6 +58,42 @@ export class RsvpEditComponent implements OnInit {
     return this.form.controls.songs;
   }
 
+  get childGuests(): FormArray<ChildGuestForm> {
+    return this.form.controls.childGuests;
+  }
+
+  private newChildGroup(
+    fullName = '',
+    age: number | null = null,
+    intolerances = ''
+  ): ChildGuestForm {
+    return this.fb.group({
+      fullName: this.fb.nonNullable.control(fullName, Validators.required),
+      age: this.fb.control<number | null>(age),
+      intolerances: this.fb.nonNullable.control(intolerances)
+    });
+  }
+
+  addDietary(): void {
+    this.dietary.push(this.fb.nonNullable.group({ type: [''], detail: [''] }));
+  }
+
+  removeDietary(index: number): void {
+    if (this.dietary.length <= 1) {
+      this.dietary.at(0).reset({ type: '', detail: '' });
+      return;
+    }
+    this.dietary.removeAt(index);
+  }
+
+  addChild(): void {
+    this.childGuests.push(this.newChildGroup());
+  }
+
+  removeChild(index: number): void {
+    this.childGuests.removeAt(index);
+  }
+
   ngOnInit(): void {
     this.editToken = this.route.snapshot.paramMap.get('editToken') ?? '';
     if (!this.editToken) {
@@ -61,13 +103,19 @@ export class RsvpEditComponent implements OnInit {
     }
     this.api.getRsvp(this.editToken).subscribe({
       next: (rsvp) => {
-        this.inviteCode.set(rsvp.inviteCode);
+        this.displayName.set(rsvp.fullName);
         this.form.patchValue({
+          fullName: rsvp.fullName ?? '',
           attending: rsvp.attending,
           adults: rsvp.adults,
-          children: rsvp.children,
           notes: rsvp.notes ?? ''
         });
+        if (rsvp.childGuests?.length) {
+          this.childGuests.clear();
+          for (const c of rsvp.childGuests) {
+            this.childGuests.push(this.newChildGroup(c.fullName, c.age, c.intolerances ?? ''));
+          }
+        }
         if (rsvp.dietaryRequirements?.length) {
           this.dietary.clear();
           for (const d of rsvp.dietaryRequirements) {
@@ -100,7 +148,7 @@ export class RsvpEditComponent implements OnInit {
       },
       error: () => {
         this.loading.set(false);
-        this.error.set('No se pudo cargar el RSVP.');
+        this.error.set('No se pudo cargar la confirmación.');
       }
     });
   }
@@ -114,6 +162,14 @@ export class RsvpEditComponent implements OnInit {
     this.saving.set(true);
     this.error.set(null);
     this.saved.set(false);
+
+    const childrenList = v.childGuests
+      .filter((c) => c.fullName.trim())
+      .map((c) => ({
+        fullName: c.fullName.trim(),
+        age: c.age == null || Number.isNaN(Number(c.age)) ? null : Number(c.age),
+        intolerances: c.intolerances.trim() || null
+      }));
 
     const dietary = v.dietaryRequirements
       .filter((d) => d.type.trim())
@@ -131,13 +187,15 @@ export class RsvpEditComponent implements OnInit {
 
     this.api
       .updateRsvp(this.editToken, {
+        fullName: v.fullName.trim() || null,
         attending: v.attending,
         adults: v.adults,
-        children: v.children,
+        children: childrenList.length,
         notes: v.notes.trim() || null,
         dietaryRequirements: dietary.length ? dietary : null,
         transport: transport.length ? transport : null,
-        songs: songs.length ? songs : null
+        songs: songs.length ? songs : null,
+        childGuests: childrenList.length ? childrenList : null
       })
       .subscribe({
         next: () => {

@@ -9,6 +9,14 @@ export interface SectionFlags {
   ornaments: boolean;
 }
 
+export interface RsvpFormConfig {
+  showNotes: boolean;
+  showDietary: boolean;
+  showTransport: boolean;
+  showSongs: boolean;
+  showChildren: boolean;
+}
+
 export interface PublicWedding {
   partnerNames: string | null;
   weddingAt: string | null;
@@ -16,7 +24,12 @@ export interface PublicWedding {
   storyHtml: string | null;
   giftIban: string | null;
   giftHolder: string | null;
+  heroImageUrl: string | null;
+  storyImageUrl: string | null;
+  spotifyPlaylistUrl: string | null;
+  ornamentSuggestion: string | null;
   sections: SectionFlags;
+  rsvpForm: RsvpFormConfig;
 }
 
 export interface WeddingConfiguration {
@@ -26,6 +39,10 @@ export interface WeddingConfiguration {
   storyHtml: string | null;
   giftIban: string | null;
   giftHolder: string | null;
+  heroImageUrl: string | null;
+  storyImageUrl: string | null;
+  spotifyPlaylistUrl: string | null;
+  ornamentSuggestion: string | null;
   showStory: boolean;
   showVenue: boolean;
   showTimeline: boolean;
@@ -34,6 +51,11 @@ export interface WeddingConfiguration {
   showRsvp: boolean;
   showPhotos: boolean;
   showOrnaments: boolean;
+  rsvpShowNotes: boolean;
+  rsvpShowDietary: boolean;
+  rsvpShowTransport: boolean;
+  rsvpShowSongs: boolean;
+  rsvpShowChildren: boolean;
 }
 
 export interface VenueImage {
@@ -74,6 +96,22 @@ export interface PlaylistTrack {
   sortOrder: number;
 }
 
+export interface SpotifyTrack {
+  id: string;
+  uri: string;
+  title: string | null;
+  artist: string | null;
+  previewUrl: string | null;
+}
+
+export interface SpotifyPlaylist {
+  playlistUrl: string | null;
+  playlistUri: string;
+  playlistId: string;
+  name: string | null;
+  tracks: SpotifyTrack[];
+}
+
 export interface DietaryRequirement {
   type: string;
   detail: string | null;
@@ -97,8 +135,15 @@ export interface SongRequest {
   artist: string | null;
 }
 
+export interface RsvpChildGuest {
+  fullName: string;
+  age: number | null;
+  intolerances: string | null;
+}
+
 export interface RsvpSubmitRequest {
-  inviteCode: string;
+  inviteCode: string | null;
+  fullName: string | null;
   attending: boolean;
   adults: number;
   children: number;
@@ -106,9 +151,11 @@ export interface RsvpSubmitRequest {
   dietaryRequirements: DietaryRequirement[] | null;
   transport: TransportRequest[] | null;
   songs: SongRequest[] | null;
+  childGuests: RsvpChildGuest[] | null;
 }
 
 export interface RsvpUpdateRequest {
+  fullName: string | null;
   attending: boolean;
   adults: number;
   children: number;
@@ -116,10 +163,12 @@ export interface RsvpUpdateRequest {
   dietaryRequirements: DietaryRequirement[] | null;
   transport: TransportRequest[] | null;
   songs: SongRequest[] | null;
+  childGuests: RsvpChildGuest[] | null;
 }
 
 export interface RsvpView {
-  inviteCode: string;
+  inviteCode: string | null;
+  fullName: string | null;
   attending: boolean;
   adults: number;
   children: number;
@@ -129,6 +178,7 @@ export interface RsvpView {
   dietaryRequirements: DietaryRequirement[] | null;
   transport: TransportView[] | null;
   songs: SongRequest[] | null;
+  childGuests: RsvpChildGuest[] | null;
 }
 
 export interface RsvpSubmitResponse {
@@ -217,18 +267,34 @@ export interface RegenerateTokenResponse {
   editToken: string;
 }
 
+export interface BusSlotMetric {
+  busSlot: string;
+  seats: number;
+  reservations: number;
+}
+
 export interface Dashboard {
   invitationsTotal: number;
   invitationsActive: number;
+  invitationsWithoutRsvp: number;
   rsvpTotal: number;
   rsvpAttending: number;
   rsvpDeclined: number;
+  responseRatePercent: number;
   guestsExpected: number;
+  adultsExpected: number;
+  childrenExpected: number;
+  dietaryEntries: number;
+  transportReservations: number;
+  songSuggestions: number;
   photosPending: number;
   photosApproved: number;
   photosRejected: number;
   galleryPublished: boolean;
   ornamentsAssigned: number;
+  playlistTracks: number;
+  rsvpLast7Days: number;
+  busSlots: BusSlotMetric[];
 }
 
 export interface LoginRequest {

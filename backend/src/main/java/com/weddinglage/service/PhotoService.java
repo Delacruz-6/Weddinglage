@@ -94,7 +94,7 @@ public class PhotoService {
     @Transactional(readOnly = true)
     public List<PhotoDtos.PhotoPublicDto> listPublic(boolean adminBypass) {
         if (!adminBypass && !isGalleryPublished()) {
-            throw new ApiException("NOT_PUBLISHED", "La galería aún no está publicada", HttpStatus.FORBIDDEN);
+            return List.of();
         }
         return photoRepository.findByStatusOrderByUploadedAtDesc(Photo.STATUS_APPROVED).stream()
                 .map(p -> new PhotoDtos.PhotoPublicDto(p.getId(), p.getMimeType(), p.getUploadedAt()))

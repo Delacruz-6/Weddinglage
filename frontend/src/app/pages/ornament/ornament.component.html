@@ -1,31 +1,18 @@
-<app-snow />
 <div class="wrap">
-  <a routerLink="/" class="back">← Inicio</a>
-  <h1>Vuestro adorno</h1>
+  <a routerLink="/" class="back">← Volver a la invitación</a>
+  <header class="intro">
+    <p class="eyebrow">Navidad</p>
+    <h1>Adorno navideño</h1>
+    <p class="lede">
+      Cada invitado deberá traer un adorno navideño; durante la celebración
+      descubriréis qué pasa con él.
+    </p>
+  </header>
 
-  <form class="lookup" (ngSubmit)="lookup()">
-    <label>
-      Código de invitación
-      <input [(ngModel)]="inviteInput" name="inviteCode" autocomplete="off" />
-    </label>
-    <button type="submit" class="btn">Ver adorno</button>
-  </form>
-
-  @if (loading()) {
-    <p>Cargando…</p>
-  } @else if (error()) {
-    <p class="error">{{ error() }}</p>
-  } @else {
-    @if (ornament(); as o) {
-      <article class="card">
-        <p class="name">{{ o.ornamentName || o.ornamentCode || 'Adorno asignado' }}</p>
-        @if (o.ornamentCode) {
-          <p class="code">Código: {{ o.ornamentCode }}</p>
-        }
-        @if (o.imageKey) {
-          <p class="muted">Imagen: {{ o.imageKey }}</p>
-        }
-      </article>
-    }
+  @if (suggestion(); as tip) {
+    <article class="panel tip">
+      <h2>Detalle</h2>
+      <p class="pre">{{ tip }}</p>
+    </article>
   }
 </div>

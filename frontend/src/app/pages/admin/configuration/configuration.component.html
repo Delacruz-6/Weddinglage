@@ -3,6 +3,7 @@
   <p>Cargando…</p>
 } @else {
   <form [formGroup]="form" (ngSubmit)="save()" class="form">
+    <h2>Identidad</h2>
     <label>Nombres de la pareja <input formControlName="partnerNames" /></label>
     <label>Fecha y hora (local) <input type="datetime-local" formControlName="weddingAt" /></label>
     <label>Mensaje de bienvenida <textarea formControlName="welcomeMessage" rows="3"></textarea></label>
@@ -10,16 +11,49 @@
     <label>IBAN regalo <input formControlName="giftIban" /></label>
     <label>Titular <input formControlName="giftHolder" /></label>
 
+    <h2>Fotos del landing</h2>
+    <p class="hint">URLs públicas HTTPS (hero a pantalla completa e imagen de la historia). Ideal: luces de Navidad, invierno o foto de pareja.</p>
+    <label>Foto hero (URL) <input formControlName="heroImageUrl" placeholder="https://…" /></label>
+    <label>Foto historia (URL) <input formControlName="storyImageUrl" placeholder="https://…" /></label>
+
+    <h2>Música</h2>
+    <p class="hint">
+      El landing reproduce MP3 locales desde <code>frontend/public/music/</code>
+      (lista en <code>playlist.json</code>). Ya no usa Spotify.
+    </p>
+
+    <h2>Posdata del landing (P. D.)</h2>
+    <p class="hint">
+      Texto breve al final de la invitación sobre el adorno navideño que trae cada invitado.
+    </p>
+    <label>
+      Texto de la posdata
+      <textarea
+        formControlName="ornamentSuggestion"
+        rows="4"
+        placeholder="Cada invitado deberá traer un adorno navideño…"
+      ></textarea>
+    </label>
+
     <fieldset>
       <legend>Secciones visibles</legend>
       <label class="chk"><input type="checkbox" formControlName="showStory" /> Historia</label>
       <label class="chk"><input type="checkbox" formControlName="showVenue" /> Lugar</label>
       <label class="chk"><input type="checkbox" formControlName="showTimeline" /> Programa</label>
-      <label class="chk"><input type="checkbox" formControlName="showPlaylist" /> Playlist</label>
+      <label class="chk"><input type="checkbox" formControlName="showPlaylist" /> Música</label>
       <label class="chk"><input type="checkbox" formControlName="showGifts" /> Regalos</label>
-      <label class="chk"><input type="checkbox" formControlName="showRsvp" /> RSVP</label>
+      <label class="chk"><input type="checkbox" formControlName="showRsvp" /> Confirmación de asistencia</label>
       <label class="chk"><input type="checkbox" formControlName="showPhotos" /> Fotos</label>
-      <label class="chk"><input type="checkbox" formControlName="showOrnaments" /> Adornos</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Campos de la confirmación de asistencia</legend>
+      <p class="hint">Activad o desactivad bloques del formulario público (RSVP = confirmación).</p>
+      <label class="chk"><input type="checkbox" formControlName="rsvpShowChildren" /> Preguntar niños</label>
+      <label class="chk"><input type="checkbox" formControlName="rsvpShowNotes" /> Notas / mensaje</label>
+      <label class="chk"><input type="checkbox" formControlName="rsvpShowDietary" /> Alimentación / alergias</label>
+      <label class="chk"><input type="checkbox" formControlName="rsvpShowTransport" /> Autobús</label>
+      <label class="chk"><input type="checkbox" formControlName="rsvpShowSongs" /> Canciones sugeridas</label>
     </fieldset>
 
     @if (message()) {

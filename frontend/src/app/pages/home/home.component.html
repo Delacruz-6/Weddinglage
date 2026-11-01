@@ -1,10 +1,10 @@
-<app-snow />
-
 @if (showWelcome() && !loading() && !error()) {
   <app-welcome-overlay
     [message]="wedding()?.welcomeMessage ?? null"
     [partnerNames]="partnerNames()"
+    [weddingDate]="sealDate()"
     (entered)="onEnterWelcome()"
+    (closed)="onWelcomeClosed()"
   />
 }
 
@@ -14,126 +14,175 @@
   <p class="status error">{{ error() }}</p>
 } @else {
   @if (wedding(); as w) {
-    <header class="hero">
-      <p class="brand">Weddinglage</p>
-      <h1>{{ partnerNames() }}</h1>
-      <p class="date">{{ formattedDate() }}</p>
-      <app-countdown [weddingAt]="w.weddingAt" />
-      <nav class="hero-nav">
-        @if (w.sections.rsvp) {
-          <a routerLink="/rsvp">Confirmar asistencia</a>
-        }
-        @if (w.sections.ornaments) {
-          <a routerLink="/ornament" class="ghost">Adorno</a>
-        }
-        @if (w.sections.photos) {
-          <a routerLink="/gallery" class="ghost">Galería</a>
-        }
-      </nav>
-    </header>
+    <div class="landing" [class.reveal]="landingReveal() || !showWelcome()">
+      <header class="hero">
+        <app-christmas-motifs variant="corners" />
 
-    <main class="page">
-      @if (w.sections.story && w.storyHtml) {
-        <section id="historia" class="section">
-          <h2>Nuestra historia</h2>
-          <div class="prose" [innerHTML]="w.storyHtml"></div>
-        </section>
-      }
+        <div class="hero-stage">
+          <img
+            class="watercolor-tree"
+            src="/arbol-acuarela.png?v=7"
+            alt=""
+            aria-hidden="true"
+          />
+        </div>
 
-      @if (w.sections.venue) {
-        @if (venue(); as v) {
-          <section id="celebracion" class="section">
-            <h2>Celebración</h2>
-            <p class="lead">{{ v.name || 'Lugar por confirmar' }}</p>
-            @if (v.addressLine || v.city) {
-              <p>
-                {{ v.addressLine }}
-                @if (v.city) {
-                  <br />{{ v.postalCode }} {{ v.city }}
-                }
-                @if (v.country) {
-                  <br />{{ v.country }}
-                }
-              </p>
+        <div class="hero-copy">
+          <p class="season">¡Nos casamos!</p>
+          <h1 class="names">{{ partnerNames() }}</h1>
+          <p class="date">{{ formattedDate() }}</p>
+          <app-christmas-motifs variant="divider" />
+          <p class="hero-line">Os invitamos a celebrar con nosotros</p>
+          <app-countdown [weddingAt]="w.weddingAt" />
+          <div class="hero-actions">
+            @if (w.sections.rsvp) {
+              <a routerLink="/rsvp" class="btn">Confirmar asistencia</a>
+            }
+            @if (w.sections.timeline) {
+              <a href="#programa" class="link-quiet">Ver el programa</a>
+            }
+          </div>
+        </div>
+      </header>
+
+      <main class="sheet">
+        @if (w.sections.story && (w.storyHtml || w.storyImageUrl)) {
+          <section id="historia" class="block">
+            <p class="kicker">Nosotros</p>
+            <h2>Nuestra historia</h2>
+            <app-christmas-motifs variant="divider" />
+            @if (w.storyImageUrl) {
+              <img class="story-photo" [src]="w.storyImageUrl" alt="Foto de la pareja" loading="lazy" />
+            }
+            @if (w.storyHtml) {
+              <div class="prose" [innerHTML]="w.storyHtml"></div>
             }
           </section>
-
-          <section id="como-llegar" class="section">
-            <h2>Cómo llegar</h2>
-            @if (v.howToArrive) {
-              <p class="pre">{{ v.howToArrive }}</p>
-            }
-            @if (v.parkingNotes) {
-              <p class="pre muted">{{ v.parkingNotes }}</p>
-            }
-            <div class="map-links">
-              @if (googleMapsUrl(v); as g) {
-                <a [href]="g" target="_blank" rel="noopener noreferrer">Abrir en Google Maps</a>
-              }
-              @if (appleMapsUrl(v); as a) {
-                <a [href]="a" target="_blank" rel="noopener noreferrer">Abrir en Apple Maps</a>
-              }
-            </div>
-          </section>
         }
-      }
 
-      @if (w.sections.timeline && timeline().length) {
-        <section id="timeline" class="section">
-          <h2>Programa del día</h2>
-          <ol class="timeline">
-            @for (ev of timeline(); track ev.id ?? ev.title) {
-              <li>
-                <span class="time">{{ formatTime(ev.eventTime) }}</span>
-                <div>
-                  <strong>{{ ev.title }}</strong>
-                  @if (ev.description) {
-                    <p>{{ ev.description }}</p>
+        @if (w.sections.venue) {
+          @if (venue(); as v) {
+            <section id="celebracion" class="block">
+              <p class="kicker">El día</p>
+              <h2>Ceremonia y celebración</h2>
+              <app-christmas-motifs variant="divider" />
+              <p class="place">{{ v.name || 'Lugar por confirmar' }}</p>
+              @if (v.addressLine || v.city) {
+                <p class="address">
+                  {{ v.addressLine }}
+                  @if (v.city) {
+                    <br />{{ v.postalCode }} {{ v.city }}
                   }
-                </div>
-              </li>
-            }
-          </ol>
-        </section>
-      }
-
-      @if (w.sections.gifts && w.giftIban) {
-        <section id="regalo" class="section">
-          <h2>Regalo</h2>
-          <p>Si deseáis colaborar con un detalle, podéis hacerlo mediante transferencia:</p>
-          <p class="iban"><code>{{ w.giftIban }}</code></p>
-          @if (w.giftHolder) {
-            <p class="muted">Titular: {{ w.giftHolder }}</p>
+                  @if (v.country) {
+                    <br />{{ v.country }}
+                  }
+                </p>
+              }
+              @if (v.parkingNotes) {
+                <p class="pre soft">{{ v.parkingNotes }}</p>
+              }
+              @if (mapsUrl(v); as maps) {
+                <a class="btn maps-btn" [href]="maps" target="_blank" rel="noopener noreferrer">
+                  Abrir en Maps
+                </a>
+              }
+            </section>
+            <!-- comentado queriendos
+            <section id="como-llegar" class="block">
+              <p class="kicker">Llegada</p>
+              <h2>Cómo llegar</h2>
+              @if (v.howToArrive) {
+                <p class="pre">{{ v.howToArrive }}</p>
+              }
+              @if (v.parkingNotes) {
+                <p class="pre soft">{{ v.parkingNotes }}</p>
+              }
+              @if (mapsUrl(v); as maps) {
+                <a class="btn maps-btn" [href]="maps" target="_blank" rel="noopener noreferrer">
+                  Abrir en Maps
+                </a>
+              }
+            </section>
+             -->
           }
-        </section>
-      }
+        }
 
-      @if (w.sections.photos) {
-        <section id="galeria" class="section">
-          <h2>Galería</h2>
-          <p>Compartid y mirad los momentos del día.</p>
-          <a routerLink="/gallery" class="text-link">Ver galería pública</a>
-          <a routerLink="/upload" class="text-link">Subir una foto</a>
-        </section>
-      }
+        @if (w.sections.timeline && timeline().length) {
+          <section id="programa" class="block program">
+            <p class="kicker">Itinerario</p>
+            <h2>Programa</h2>
+            <app-christmas-motifs variant="divider" />
+            <ol class="program-list">
+              @for (ev of timeline(); track ev.id ?? ev.title) {
+                <li>
+                  <span class="dot" aria-hidden="true"></span>
+                  <div class="program-copy">
+                    <p class="when">{{ formatTime(ev.eventTime) }}</p>
+                    <h3>{{ ev.title }}</h3>
+                    @if (ev.description) {
+                      <p>{{ ev.description }}</p>
+                    }
+                  </div>
+                </li>
+              }
+            </ol>
+          </section>
+        }
 
-      @if (w.sections.rsvp) {
-        <section id="rsvp" class="section cta-block">
-          <h2>Confirmación</h2>
-          <p>Necesitamos vuestra respuesta para organizar la celebración.</p>
-          <a routerLink="/rsvp" class="btn">Ir al RSVP</a>
-        </section>
-      }
+        @if (w.sections.gifts && w.giftIban) {
+          <section id="regalo" class="block">
+            <p class="kicker">Detalle</p>
+            <h2>Regalo</h2>
+            <app-christmas-motifs variant="divider" />
+            <p>Si deseáis colaborar con un detalle, podéis hacerlo mediante transferencia.</p>
+            <button
+              type="button"
+              class="iban-copy"
+              (click)="copyIban(w.giftIban!)"
+              [attr.aria-label]="'Copiar IBAN ' + w.giftIban"
+            >
+              <code>{{ w.giftIban }}</code>
+              <span class="iban-hint">{{ ibanCopied() ? 'Copiado' : 'Pulsá para copiar' }}</span>
+            </button>
+            @if (w.giftHolder) {
+              <p class="soft">Titular: {{ w.giftHolder }}</p>
+            }
+          </section>
+        }
 
-      @if (w.sections.ornaments) {
-        <section id="adorno" class="section">
-          <h2>Vuestro adorno</h2>
-          <p>Con el código de invitación podéis ver el adorno que os hemos asignado.</p>
-          <a routerLink="/ornament" class="text-link">Consultar con el código de invitación</a>
-        </section>
-      }
-    </main>
+        @if (w.sections.photos) {
+          <section id="galeria" class="block">
+            <p class="kicker">Recuerdos</p>
+            <h2>Galería</h2>
+            <p>Las fotos de la celebración irán apareciendo aquí tras la revisión.</p>
+            <a routerLink="/gallery" class="link-quiet">Ver galería</a>
+          </section>
+        }
+
+        @if (w.sections.rsvp) {
+          <section id="rsvp" class="block cta">
+            <p class="kicker">Os esperamos</p>
+            <h2>Confirmación</h2>
+            <app-christmas-motifs variant="divider" />
+            <p>
+              Solo necesitamos nombre y apellidos (y los niños, si vienen) para organizar
+              la mesa y el día.
+            </p>
+            <a routerLink="/rsvp" class="btn">Confirmar asistencia</a>
+          </section>
+        }
+
+        <p class="postscript">
+          <!-- Dejar comentado <span>P. D.</span>-->
+          @if (w.ornamentSuggestion && w.ornamentSuggestion.trim().length > 2) {
+            {{ w.ornamentSuggestion }}
+          } @else {
+            Cada invitado deberá traer un adorno navideño, descubrireis que pasará con el a lo largo de la celebración
+          }
+        </p>
+      </main>
+    </div>
   }
 }
 
-<app-music-player />
+<app-music-player [enabled]="true" />

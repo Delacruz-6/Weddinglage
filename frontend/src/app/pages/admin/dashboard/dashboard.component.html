@@ -4,13 +4,69 @@
 } @else if (data()) {
   @if (data(); as d) {
     <div class="stats">
-      <div><span>Invitaciones</span><strong>{{ d.invitationsTotal }}</strong><small>{{ d.invitationsActive }} activas</small></div>
-      <div><span>RSVP</span><strong>{{ d.rsvpTotal }}</strong><small>{{ d.rsvpAttending }} sí / {{ d.rsvpDeclined }} no</small></div>
-      <div><span>Invitados esperados</span><strong>{{ d.guestsExpected }}</strong></div>
-      <div><span>Fotos</span><strong>{{ d.photosPending }}</strong><small>{{ d.photosApproved }} aprobadas / {{ d.photosRejected }} rechazadas</small></div>
-      <div><span>Galería</span><strong>{{ d.galleryPublished ? 'Publicada' : 'No publicada' }}</strong></div>
-      <div><span>Adornos</span><strong>{{ d.ornamentsAssigned }}</strong></div>
+      <div>
+        <span>Confirmaciones recibidas</span>
+        <strong>{{ d.rsvpTotal }}</strong>
+        <small>{{ d.rsvpLast7Days }} en los últimos 7 días</small>
+      </div>
+      <div>
+        <span>Asistencia</span>
+        <strong>{{ d.rsvpAttending }} sí / {{ d.rsvpDeclined }} no</strong>
+        <small>por nombre y apellidos</small>
+      </div>
+      <div>
+        <span>Invitados esperados</span>
+        <strong>{{ d.guestsExpected }}</strong>
+        <small>{{ d.adultsExpected }} adultos · {{ d.childrenExpected }} niños</small>
+      </div>
+      <div>
+        <span>Alimentación</span>
+        <strong>{{ d.dietaryEntries }}</strong>
+        <small>registros de alergias/necesidades</small>
+      </div>
+      <div>
+        <span>Autobús</span>
+        <strong>{{ d.transportReservations }}</strong>
+        <small>reservas</small>
+      </div>
+      <div>
+        <span>Canciones sugeridas</span>
+        <strong>{{ d.songSuggestions }}</strong>
+      </div>
+      <div>
+        <span>Playlist</span>
+        <strong>{{ d.playlistTracks }}</strong>
+        <small>pistas publicadas</small>
+      </div>
+      <div>
+        <span>Fotos</span>
+        <strong>{{ d.photosPending }}</strong>
+        <small>{{ d.photosApproved }} aprobadas / {{ d.photosRejected }} rechazadas</small>
+      </div>
+      <div>
+        <span>Galería</span>
+        <strong>{{ d.galleryPublished ? 'Publicada' : 'Cerrada' }}</strong>
+      </div>
+      <div>
+        <span>Sugerencia de adorno</span>
+        <strong>{{ d.ornamentsAssigned }}</strong>
+        <small>asignaciones internas (opcional)</small>
+      </div>
     </div>
+
+    @if (d.busSlots?.length) {
+      <section class="bus">
+        <h2>Cupos de autobús (reservas)</h2>
+        <ul>
+          @for (slot of d.busSlots; track slot.busSlot) {
+            <li>
+              <strong>{{ slot.busSlot }}</strong>
+              — {{ slot.seats }} asientos en {{ slot.reservations }} reservas
+            </li>
+          }
+        </ul>
+      </section>
+    }
   }
 } @else {
   <p>Cargando…</p>

@@ -6,7 +6,7 @@ import { PublicWedding, TimelineEvent, Venue } from '../../core/models/api.model
 import { CountdownComponent } from '../../shared/components/countdown/countdown.component';
 import { WelcomeOverlayComponent } from '../../shared/components/welcome-overlay/welcome-overlay.component';
 import { MusicPlayerComponent } from '../../shared/components/music-player/music-player.component';
-import { SnowComponent } from '../../shared/components/snow/snow.component';
+import { ChristmasMotifsComponent } from '../../shared/components/christmas-motifs/christmas-motifs.component';
 
 const WELCOME_KEY = 'weddinglage-welcome-seen';
 
@@ -19,7 +19,7 @@ const WELCOME_KEY = 'weddinglage-welcome-seen';
     CountdownComponent,
     WelcomeOverlayComponent,
     MusicPlayerComponent,
-    SnowComponent
+    ChristmasMotifsComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -35,6 +35,10 @@ export class HomeComponent implements OnInit {
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly showWelcome = signal(sessionStorage.getItem(WELCOME_KEY) !== '1');
+  readonly landingReveal = signal(sessionStorage.getItem(WELCOME_KEY) === '1');
+  readonly ibanCopied = signal(false);
+
+  private ibanCopiedTimer: ReturnType<typeof setTimeout> | null = null;
 
   ngOnInit(): void {
     this.api.getWedding().subscribe({
@@ -47,6 +51,10 @@ export class HomeComponent implements OnInit {
         if (w.sections?.timeline) {
           this.api.getTimeline().subscribe({ next: (t) => this.timeline.set(t) });
         }
+        // Returning visitors: try to resume; browsers may still require a tap on ▶.
+        if (!this.showWelcome()) {
+          queueMicrotask(() => this.player?.startFromGesture());
+        }
       },
       error: () => {
         this.loading.set(false);
@@ -57,12 +65,39 @@ export class HomeComponent implements OnInit {
 
   onEnterWelcome(): void {
     sessionStorage.setItem(WELCOME_KEY, '1');
-    this.showWelcome.set(false);
+    this.landingReveal.set(true);
+    // Start audio in the same gesture; overlay removes itself via (closed).
     this.player?.startFromGesture();
+  }
+
+  onWelcomeClosed(): void {
+    this.showWelcome.set(false);
   }
 
   partnerNames(): string {
     return this.wedding()?.partnerNames?.trim() || 'Nombres pendientes';
+  }
+
+  /** Compact date for the wax-seal letter (e.g. 18 · 12 · 2027). */
+  sealDate(): string {
+    const at = this.wedding()?.weddingAt;
+    if (!at) {
+      return '18 · 12 · 2027';
+    }
+    try {
+      const parts = new Intl.DateTimeFormat('es-ES', {
+        timeZone: 'Europe/Madrid',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }).formatToParts(new Date(at));
+      const day = parts.find((p) => p.type === 'day')?.value ?? '18';
+      const month = parts.find((p) => p.type === 'month')?.value ?? '12';
+      const year = parts.find((p) => p.type === 'year')?.value ?? '2027';
+      return `${day} · ${month} · ${year}`;
+    } catch {
+      return '18 · 12 · 2027';
+    }
   }
 
   formattedDate(): string {
@@ -73,32 +108,58 @@ export class HomeComponent implements OnInit {
     try {
       return new Intl.DateTimeFormat('es-ES', {
         timeZone: 'Europe/Madrid',
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
         day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        month: 'long',
+        year: 'numeric'
       }).format(new Date(at));
     } catch {
       return 'Fecha por confirmar';
     }
   }
 
-  googleMapsUrl(v: Venue): string | null {
+  /** Opens Google Maps (app on mobile, web on desktop) with the venue. */
+  mapsUrl(v: Venue): string | null {
+    const label = [v.name, v.addressLine, v.postalCode, v.city]
+      .filter(Boolean)
+      .join(', ');
+    if (v.latitude != null && v.longitude != null && label) {
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${label} @${v.latitude},${v.longitude}`)}`;
+    }
     if (v.latitude != null && v.longitude != null) {
       return `https://www.google.com/maps/search/?api=1&query=${v.latitude},${v.longitude}`;
     }
-    const q = [v.addressLine, v.city, v.postalCode, v.country].filter(Boolean).join(', ');
-    return q ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}` : null;
+    return label
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(label)}`
+      : null;
   }
 
-  appleMapsUrl(v: Venue): string | null {
-    if (v.latitude != null && v.longitude != null) {
-      return `https://maps.apple.com/?ll=${v.latitude},${v.longitude}&q=${encodeURIComponent(v.name || 'Lugar')}`;
+  async copyIban(iban: string): Promise<void> {
+    const value = iban.trim();
+    if (!value) {
+      return;
     }
-    const q = [v.addressLine, v.city, v.postalCode, v.country].filter(Boolean).join(', ');
-    return q ? `https://maps.apple.com/?q=${encodeURIComponent(q)}` : null;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = value;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      this.ibanCopied.set(true);
+      if (this.ibanCopiedTimer) {
+        clearTimeout(this.ibanCopiedTimer);
+      }
+      this.ibanCopiedTimer = setTimeout(() => this.ibanCopied.set(false), 2000);
+    } catch {
+      this.ibanCopied.set(false);
+    }
   }
 
   formatTime(eventTime: string | null): string {

@@ -103,7 +103,7 @@ export class PhotosComponent implements OnInit {
 
   uploadUrl(token: string): string {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    return `${origin}/upload?t=${encodeURIComponent(token)}`;
+    return `${origin}/fotos?t=${encodeURIComponent(token)}`;
   }
 
   private toLocalInput(iso: string | null): string {

@@ -31,6 +31,18 @@ public class WeddingConfiguration {
     @Column(name = "gift_holder")
     private String giftHolder;
 
+    @Column(name = "hero_image_url")
+    private String heroImageUrl;
+
+    @Column(name = "story_image_url")
+    private String storyImageUrl;
+
+    @Column(name = "spotify_playlist_url")
+    private String spotifyPlaylistUrl;
+
+    @Column(name = "ornament_suggestion")
+    private String ornamentSuggestion;
+
     @Column(name = "show_story", nullable = false)
     private boolean showStory = true;
 
@@ -54,6 +66,21 @@ public class WeddingConfiguration {
 
     @Column(name = "show_ornaments", nullable = false)
     private boolean showOrnaments = true;
+
+    @Column(name = "rsvp_show_notes", nullable = false)
+    private boolean rsvpShowNotes = true;
+
+    @Column(name = "rsvp_show_dietary", nullable = false)
+    private boolean rsvpShowDietary = true;
+
+    @Column(name = "rsvp_show_transport", nullable = false)
+    private boolean rsvpShowTransport = true;
+
+    @Column(name = "rsvp_show_songs", nullable = false)
+    private boolean rsvpShowSongs = true;
+
+    @Column(name = "rsvp_show_children", nullable = false)
+    private boolean rsvpShowChildren = true;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
@@ -115,6 +142,38 @@ public class WeddingConfiguration {
 
     public void setGiftHolder(String giftHolder) {
         this.giftHolder = giftHolder;
+    }
+
+    public String getHeroImageUrl() {
+        return heroImageUrl;
+    }
+
+    public void setHeroImageUrl(String heroImageUrl) {
+        this.heroImageUrl = heroImageUrl;
+    }
+
+    public String getStoryImageUrl() {
+        return storyImageUrl;
+    }
+
+    public void setStoryImageUrl(String storyImageUrl) {
+        this.storyImageUrl = storyImageUrl;
+    }
+
+    public String getSpotifyPlaylistUrl() {
+        return spotifyPlaylistUrl;
+    }
+
+    public void setSpotifyPlaylistUrl(String spotifyPlaylistUrl) {
+        this.spotifyPlaylistUrl = spotifyPlaylistUrl;
+    }
+
+    public String getOrnamentSuggestion() {
+        return ornamentSuggestion;
+    }
+
+    public void setOrnamentSuggestion(String ornamentSuggestion) {
+        this.ornamentSuggestion = ornamentSuggestion;
     }
 
     public boolean isShowStory() {
@@ -179,6 +238,46 @@ public class WeddingConfiguration {
 
     public void setShowOrnaments(boolean showOrnaments) {
         this.showOrnaments = showOrnaments;
+    }
+
+    public boolean isRsvpShowNotes() {
+        return rsvpShowNotes;
+    }
+
+    public void setRsvpShowNotes(boolean rsvpShowNotes) {
+        this.rsvpShowNotes = rsvpShowNotes;
+    }
+
+    public boolean isRsvpShowDietary() {
+        return rsvpShowDietary;
+    }
+
+    public void setRsvpShowDietary(boolean rsvpShowDietary) {
+        this.rsvpShowDietary = rsvpShowDietary;
+    }
+
+    public boolean isRsvpShowTransport() {
+        return rsvpShowTransport;
+    }
+
+    public void setRsvpShowTransport(boolean rsvpShowTransport) {
+        this.rsvpShowTransport = rsvpShowTransport;
+    }
+
+    public boolean isRsvpShowSongs() {
+        return rsvpShowSongs;
+    }
+
+    public void setRsvpShowSongs(boolean rsvpShowSongs) {
+        this.rsvpShowSongs = rsvpShowSongs;
+    }
+
+    public boolean isRsvpShowChildren() {
+        return rsvpShowChildren;
+    }
+
+    public void setRsvpShowChildren(boolean rsvpShowChildren) {
+        this.rsvpShowChildren = rsvpShowChildren;
     }
 
     public Instant getCreatedAt() {

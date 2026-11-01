@@ -9,7 +9,12 @@ public record PublicWeddingDto(
         String storyHtml,
         String giftIban,
         String giftHolder,
-        SectionFlagsDto sections
+        String heroImageUrl,
+        String storyImageUrl,
+        String spotifyPlaylistUrl,
+        String ornamentSuggestion,
+        SectionFlagsDto sections,
+        RsvpFormConfigDto rsvpForm
 ) {
     public record SectionFlagsDto(
             boolean story,
@@ -20,6 +25,15 @@ public record PublicWeddingDto(
             boolean rsvp,
             boolean photos,
             boolean ornaments
+    ) {
+    }
+
+    public record RsvpFormConfigDto(
+            boolean showNotes,
+            boolean showDietary,
+            boolean showTransport,
+            boolean showSongs,
+            boolean showChildren
     ) {
     }
 }

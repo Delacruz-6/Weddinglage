@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <filter id="wash" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="18"/>
+      <feGaussianBlur stdDeviation="1.2"/>
+    </filter>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e9eef2"/>
+      <stop offset="45%" stop-color="#d5e3dc"/>
+      <stop offset="100%" stop-color="#c8d4c0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1600" fill="url(#sky)"/>
+  <g filter="url(#wash)" opacity="0.55">
+    <ellipse cx="220" cy="260" rx="280" ry="160" fill="#c45c6a"/>
+    <ellipse cx="980" cy="220" rx="260" ry="150" fill="#d4b57a"/>
+    <ellipse cx="600" cy="180" rx="200" ry="110" fill="#7a9e8a"/>
+    <ellipse cx="160" cy="980" rx="300" ry="180" fill="#8b3042"/>
+    <ellipse cx="1040" cy="1100" rx="280" ry="170" fill="#2f604c"/>
+    <ellipse cx="620" cy="1400" rx="420" ry="160" fill="#d4b57a"/>
+  </g>
+  <g filter="url(#soft)" opacity="0.35">
+    <polygon points="300,520 420,860 180,860" fill="#2a5544"/>
+    <polygon points="300,620 450,960 150,960" fill="#173b30"/>
+    <polygon points="900,480 1040,860 760,860" fill="#2a5544"/>
+    <polygon points="900,580 1080,980 720,980" fill="#14352b"/>
+    <polygon points="600,400 780,980 420,980" fill="#1f4738"/>
+    <polygon points="600,520 820,1120 380,1120" fill="#14352b"/>
+  </g>
+  <g opacity="0.45">
+    <circle cx="560" cy="700" r="10" fill="#8b3042"/>
+    <circle cx="640" cy="760" r="8" fill="#d4b57a"/>
+    <circle cx="520" cy="820" r="9" fill="#d4b57a"/>
+    <circle cx="680" cy="880" r="11" fill="#8b3042"/>
+    <circle cx="280" cy="760" r="8" fill="#d4b57a"/>
+    <circle cx="920" cy="740" r="9" fill="#8b3042"/>
+  </g>
+  <g opacity="0.25" fill="#f7f5ef">
+    <circle cx="140" cy="140" r="3"/><circle cx="260" cy="90" r="2"/>
+    <circle cx="480" cy="120" r="2.5"/><circle cx="720" cy="80" r="2"/>
+    <circle cx="880" cy="150" r="3"/><circle cx="1040" cy="110" r="2"/>
+    <circle cx="180" cy="420" r="2"/><circle cx="980" cy="380" r="2.5"/>
+  </g>
+</svg>

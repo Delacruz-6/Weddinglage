@@ -24,8 +24,11 @@ public class Rsvp {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invitation_id", nullable = false, unique = true)
+    @JoinColumn(name = "invitation_id", unique = true)
     private Invitation invitation;
+
+    @Column(name = "full_name")
+    private String fullName;
 
     @Column(name = "edit_token_hash", nullable = false)
     private String editTokenHash;
@@ -56,6 +59,9 @@ public class Rsvp {
     @OneToMany(mappedBy = "rsvp", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SongSuggestion> songSuggestions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "rsvp", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RsvpChild> childGuests = new ArrayList<>();
+
     public Long getId() {
         return id;
     }
@@ -66,6 +72,14 @@ public class Rsvp {
 
     public void setInvitation(Invitation invitation) {
         this.invitation = invitation;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEditTokenHash() {
@@ -130,5 +144,9 @@ public class Rsvp {
 
     public List<SongSuggestion> getSongSuggestions() {
         return songSuggestions;
+    }
+
+    public List<RsvpChild> getChildGuests() {
+        return childGuests;
     }
 }

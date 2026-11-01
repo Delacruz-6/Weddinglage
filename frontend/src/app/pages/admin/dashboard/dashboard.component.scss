@@ -33,6 +33,22 @@ small {
   font-size: 0.8rem;
 }
 
+.bus {
+  margin-top: 1.75rem;
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-gold);
+  }
+
+  ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.1rem;
+    line-height: 1.55;
+  }
+}
+
 .error {
   color: var(--color-burgundy);
 }

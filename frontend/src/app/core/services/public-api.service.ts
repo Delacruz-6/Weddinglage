@@ -7,6 +7,7 @@ import {
   PhotoUploadResponse,
   PlaylistTrack,
   PublicWedding,
+  SpotifyPlaylist,
   RsvpSubmitRequest,
   RsvpSubmitResponse,
   RsvpUpdateRequest,
@@ -34,6 +35,10 @@ export class PublicApiService {
 
   getPlaylist(): Observable<PlaylistTrack[]> {
     return this.http.get<PlaylistTrack[]>(`${this.base}/playlist`);
+  }
+
+  getSpotifyPlaylist(): Observable<SpotifyPlaylist> {
+    return this.http.get<SpotifyPlaylist>(`${this.base}/spotify-playlist`);
   }
 
   submitRsvp(body: RsvpSubmitRequest): Observable<RsvpSubmitResponse> {

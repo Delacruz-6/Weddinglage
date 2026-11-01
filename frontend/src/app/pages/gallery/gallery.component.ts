@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PublicApiService } from '../../core/services/public-api.service';
 import { PhotoPublic } from '../../core/models/api.models';
-import { SnowComponent } from '../../shared/components/snow/snow.component';
 
 @Component({
   selector: 'app-gallery',
   standalone: true,
-  imports: [CommonModule, RouterLink, SnowComponent],
+  imports: [CommonModule, RouterLink],
   templateUrl: './gallery.component.html',
   styleUrl: './gallery.component.scss'
 })
@@ -26,9 +25,7 @@ export class GalleryComponent implements OnInit {
         this.photos.set(list ?? []);
         this.loading.set(false);
         if (!list?.length) {
-          this.emptyMessage.set(
-            'La galería aún no está publicada o no hay fotos disponibles.'
-          );
+          this.emptyMessage.set('Todavía no hay fotos publicadas en la galería.');
         }
       },
       error: () => {

@@ -1,0 +1,39 @@
+<h1>Playlist</h1>
+<p class="lede">
+  La música de la invitación sale de una <strong>playlist pública de Spotify</strong>.
+  Pegad el enlace en <a routerLink="/admin/configuration">Configuración → Música (Spotify)</a>.
+</p>
+<p class="lede muted">
+  Esta pantalla ya no gestiona archivos MP3. Si tenéis canciones antiguas por URL, podéis borrarlas;
+  no se muestran en el landing.
+</p>
+
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+}
+@if (message()) {
+  <p class="ok">{{ message() }}</p>
+}
+
+@if (items().length) {
+  <ul class="list">
+    @for (item of items(); track item.id) {
+      <li>
+        <div>
+          <strong>{{ item.title }}</strong>
+          @if (item.artist) {
+            <span> — {{ item.artist }}</span>
+          }
+          @if (item.sourceUrl) {
+            <p class="url">{{ item.sourceUrl }}</p>
+          }
+        </div>
+        <div class="row-actions">
+          <button type="button" class="danger" (click)="remove(item)">Quitar</button>
+        </div>
+      </li>
+    }
+  </ul>
+} @else {
+  <p class="empty">No hay canciones por URL pendientes de limpiar.</p>
+}

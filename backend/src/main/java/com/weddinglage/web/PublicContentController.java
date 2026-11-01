@@ -2,8 +2,10 @@ package com.weddinglage.web;
 
 import com.weddinglage.service.ConfigurationService;
 import com.weddinglage.service.ContentService;
+import com.weddinglage.service.SpotifyPlaylistService;
 import com.weddinglage.web.dto.PlaylistTrackDto;
 import com.weddinglage.web.dto.PublicWeddingDto;
+import com.weddinglage.web.dto.SpotifyPlaylistDto;
 import com.weddinglage.web.dto.TimelineEventDto;
 import com.weddinglage.web.dto.VenueDto;
 import java.util.List;
@@ -17,10 +19,15 @@ public class PublicContentController {
 
     private final ConfigurationService configurationService;
     private final ContentService contentService;
+    private final SpotifyPlaylistService spotifyPlaylistService;
 
-    public PublicContentController(ConfigurationService configurationService, ContentService contentService) {
+    public PublicContentController(
+            ConfigurationService configurationService,
+            ContentService contentService,
+            SpotifyPlaylistService spotifyPlaylistService) {
         this.configurationService = configurationService;
         this.contentService = contentService;
+        this.spotifyPlaylistService = spotifyPlaylistService;
     }
 
     @GetMapping("/wedding")
@@ -41,5 +48,10 @@ public class PublicContentController {
     @GetMapping("/playlist")
     public List<PlaylistTrackDto> playlist() {
         return contentService.listPlaylist();
+    }
+
+    @GetMapping("/spotify-playlist")
+    public SpotifyPlaylistDto spotifyPlaylist() {
+        return spotifyPlaylistService.resolveConfiguredPlaylist();
     }
 }

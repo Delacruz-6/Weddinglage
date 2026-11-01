@@ -1,0 +1,17 @@
+{
+  "name": "Weddinglage Fotos",
+  "short_name": "Fotos",
+  "description": "Subí fotos de la celebración",
+  "start_url": "/fotos",
+  "display": "standalone",
+  "background_color": "#07140f",
+  "theme_color": "#0b1c16",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

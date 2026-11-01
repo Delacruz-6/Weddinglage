@@ -5,6 +5,7 @@ import com.weddinglage.domain.BusCapacity;
 import com.weddinglage.domain.DietaryRequirement;
 import com.weddinglage.domain.Invitation;
 import com.weddinglage.domain.Rsvp;
+import com.weddinglage.domain.RsvpChild;
 import com.weddinglage.domain.SongSuggestion;
 import com.weddinglage.domain.TransportReservation;
 import com.weddinglage.repository.BusCapacityRepository;
@@ -44,25 +45,35 @@ public class RsvpService {
 
     @Transactional
     public RsvpDtos.RsvpSubmitResponse submit(RsvpDtos.RsvpSubmitRequest request) {
-        Invitation invitation = invitationRepository.findByInviteCodeIgnoreCase(request.inviteCode())
-                .filter(Invitation::isActive)
-                .orElseThrow(() -> new ApiException("INVALID_INVITE", "Código de invitación no válido", HttpStatus.NOT_FOUND));
-
-        if (rsvpRepository.existsByInvitationId(invitation.getId())) {
+        String fullName = blankToNull(request.fullName());
+        if (fullName == null) {
             throw new ApiException(
-                    "RSVP_EXISTS",
-                    "Ya existe una respuesta. Usa el enlace de edición.",
-                    HttpStatus.CONFLICT);
+                    "VALIDATION_ERROR",
+                    "Indicad nombre y apellidos.",
+                    HttpStatus.BAD_REQUEST);
         }
 
-        RsvpValidation.validateAttendeeCount(request.adults(), request.children(), invitation.getMaxAttendees());
+        List<RsvpDtos.ChildDto> childGuests = request.childGuests() == null ? List.of() : request.childGuests();
+        int childrenCount = resolveChildrenCount(request.children(), childGuests);
+        int max = properties.getOpenRsvpMaxAttendees();
+        RsvpValidation.validateAttendeeCount(request.adults(), childrenCount, max);
 
         String rawToken = TokenHasher.generateToken(32);
         Rsvp rsvp = new Rsvp();
-        rsvp.setInvitation(invitation);
+        rsvp.setInvitation(null);
+        rsvp.setFullName(fullName);
         rsvp.setEditTokenHash(TokenHasher.hash(rawToken, properties.getTokenPepper()));
-        applyPayload(rsvp, request.attending(), request.adults(), request.children(), request.notes(),
-                request.dietaryRequirements(), request.transport(), request.songs(), null);
+        applyPayload(
+                rsvp,
+                request.attending(),
+                request.adults(),
+                childrenCount,
+                request.notes(),
+                request.dietaryRequirements(),
+                request.transport(),
+                request.songs(),
+                childGuests,
+                null);
         rsvpRepository.save(rsvp);
         return new RsvpDtos.RsvpSubmitResponse(rawToken, toView(rsvp));
     }
@@ -76,9 +87,24 @@ public class RsvpService {
     public RsvpDtos.RsvpViewDto updateByEditToken(String editToken, RsvpDtos.RsvpUpdateRequest request) {
         Rsvp rsvp = findByToken(editToken);
         Invitation invitation = rsvp.getInvitation();
-        RsvpValidation.validateAttendeeCount(request.adults(), request.children(), invitation.getMaxAttendees());
-        applyPayload(rsvp, request.attending(), request.adults(), request.children(), request.notes(),
-                request.dietaryRequirements(), request.transport(), request.songs(), rsvp.getId());
+        List<RsvpDtos.ChildDto> childGuests = request.childGuests() == null ? List.of() : request.childGuests();
+        int childrenCount = resolveChildrenCount(request.children(), childGuests);
+        int max = invitation != null ? invitation.getMaxAttendees() : properties.getOpenRsvpMaxAttendees();
+        RsvpValidation.validateAttendeeCount(request.adults(), childrenCount, max);
+        if (blankToNull(request.fullName()) != null) {
+            rsvp.setFullName(blankToNull(request.fullName()));
+        }
+        applyPayload(
+                rsvp,
+                request.attending(),
+                request.adults(),
+                childrenCount,
+                request.notes(),
+                request.dietaryRequirements(),
+                request.transport(),
+                request.songs(),
+                childGuests,
+                rsvp.getId());
         rsvp.setUpdatedAt(Instant.now());
         return toView(rsvpRepository.save(rsvp));
     }
@@ -111,6 +137,7 @@ public class RsvpService {
             List<RsvpDtos.DietaryDto> dietary,
             List<RsvpDtos.TransportDto> transport,
             List<RsvpDtos.SongDto> songs,
+            List<RsvpDtos.ChildDto> childGuests,
             Long existingRsvpId) {
         rsvp.setAttending(attending);
         rsvp.setAdults(adults);
@@ -125,6 +152,23 @@ public class RsvpService {
                 req.setRequirementType(dto.type());
                 req.setDetail(dto.detail());
                 rsvp.getDietaryRequirements().add(req);
+            }
+        }
+
+        rsvp.getChildGuests().clear();
+        if (attending && childGuests != null) {
+            int order = 0;
+            for (RsvpDtos.ChildDto dto : childGuests) {
+                if (dto.fullName() == null || dto.fullName().isBlank()) {
+                    continue;
+                }
+                RsvpChild child = new RsvpChild();
+                child.setRsvp(rsvp);
+                child.setFullName(dto.fullName().trim());
+                child.setAge(dto.age());
+                child.setIntolerances(blankToNull(dto.intolerances()));
+                child.setSortOrder(order++);
+                rsvp.getChildGuests().add(child);
             }
         }
 
@@ -164,6 +208,16 @@ public class RsvpService {
         }
     }
 
+    private static int resolveChildrenCount(int childrenField, List<RsvpDtos.ChildDto> childGuests) {
+        long named = childGuests.stream()
+                .filter(c -> c.fullName() != null && !c.fullName().isBlank())
+                .count();
+        if (named > 0) {
+            return (int) named;
+        }
+        return childrenField;
+    }
+
     private String resolveTransportStatus(String busSlot, int seats, Long existingRsvpId) {
         return busCapacityRepository.findByBusSlot(busSlot)
                 .map(capacity -> evaluateCapacity(capacity, seats, existingRsvpId))
@@ -172,9 +226,6 @@ public class RsvpService {
 
     private String evaluateCapacity(BusCapacity capacity, int seats, Long existingRsvpId) {
         long used = transportReservationRepository.sumConfirmedSeats(capacity.getBusSlot());
-        // When updating, confirmed seats already include this RSVP's previous reservation briefly after clear —
-        // orphanRemoval clears first within the same persistence context; sum query may still see old rows.
-        // Capacity check uses current DB confirmed seats; soft waitlist if full.
         if (used + seats <= capacity.getCapacity()) {
             return "CONFIRMED";
         }
@@ -185,8 +236,10 @@ public class RsvpService {
     }
 
     private RsvpDtos.RsvpViewDto toView(Rsvp rsvp) {
+        Invitation invitation = rsvp.getInvitation();
         return new RsvpDtos.RsvpViewDto(
-                rsvp.getInvitation().getInviteCode(),
+                invitation != null ? invitation.getInviteCode() : null,
+                rsvp.getFullName(),
                 rsvp.isAttending(),
                 rsvp.getAdults(),
                 rsvp.getChildren(),
@@ -201,6 +254,16 @@ public class RsvpService {
                         .toList(),
                 rsvp.getSongSuggestions().stream()
                         .map(s -> new RsvpDtos.SongDto(s.getTitle(), s.getArtist()))
+                        .toList(),
+                rsvp.getChildGuests().stream()
+                        .map(c -> new RsvpDtos.ChildDto(c.getFullName(), c.getAge(), c.getIntolerances()))
                         .toList());
+    }
+
+    private static String blankToNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
     }
 }

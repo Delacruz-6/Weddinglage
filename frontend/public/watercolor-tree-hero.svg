@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 860" fill="none">
+  <defs>
+    <filter id="wash" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.028" numOctaves="4" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+      <feGaussianBlur stdDeviation="1.2"/>
+    </filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+    <filter id="edge" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="6"/>
+    </filter>
+    <radialGradient id="canopy" cx="50%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#6f8f72"/>
+      <stop offset="55%" stop-color="#3f5f46"/>
+      <stop offset="100%" stop-color="#2a4032"/>
+    </radialGradient>
+    <linearGradient id="trunkWash" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8a6544"/>
+      <stop offset="100%" stop-color="#5a3d28"/>
+    </linearGradient>
+    <radialGradient id="paperGlow" cx="50%" cy="12%" r="40%">
+      <stop offset="0%" stop-color="#f7f3eb" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#f7f3eb" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="320" cy="110" rx="170" ry="100" fill="url(#paperGlow)"/>
+
+  <!-- Soft watercolor underwashes -->
+  <g filter="url(#soft)" opacity="0.45">
+    <ellipse cx="320" cy="220" rx="90" ry="70" fill="#5f7d62"/>
+    <ellipse cx="300" cy="340" rx="130" ry="95" fill="#35533c"/>
+    <ellipse cx="340" cy="480" rx="160" ry="110" fill="#2f4a36"/>
+    <ellipse cx="310" cy="600" rx="180" ry="120" fill="#24382e"/>
+  </g>
+
+  <!-- Main canopy with paper-edge wash -->
+  <g filter="url(#wash)" opacity="0.94">
+    <path d="M320 78
+      C360 120 390 168 404 210
+      C360 198 280 198 236 210
+      C250 168 280 120 320 78Z" fill="#6d8b6f"/>
+    <path d="M320 150
+      C390 210 440 280 458 340
+      C390 318 250 318 182 340
+      C200 280 250 210 320 150Z" fill="url(#canopy)" opacity="0.92"/>
+    <path d="M320 260
+      C420 340 490 430 510 510
+      C420 482 220 482 130 510
+      C150 430 220 340 320 260Z" fill="#35533c" opacity="0.9"/>
+    <path d="M320 380
+      C450 480 540 590 560 680
+      C430 648 210 648 80 680
+      C100 590 190 480 320 380Z" fill="#24382e" opacity="0.88"/>
+  </g>
+
+  <!-- Pigment blooms -->
+  <g filter="url(#soft)" opacity="0.35">
+    <circle cx="250" cy="300" r="36" fill="#7a2f3c"/>
+    <circle cx="390" cy="430" r="28" fill="#c4a574"/>
+    <circle cx="280" cy="520" r="32" fill="#7a2f3c"/>
+  </g>
+
+  <!-- Trunk -->
+  <g filter="url(#edge)" opacity="0.85">
+    <path d="M300 670 C308 700 312 740 308 770 L332 770 C328 740 332 700 340 670 Z" fill="url(#trunkWash)"/>
+  </g>
+
+  <!-- Ornaments -->
+  <g opacity="0.92">
+    <circle cx="268" cy="248" r="8" fill="#7a2f3c"/>
+    <circle cx="268" cy="248" r="8" fill="#fff" opacity="0.18"/>
+    <circle cx="362" cy="286" r="7" fill="#c4a574"/>
+    <circle cx="298" cy="352" r="9" fill="#7a2f3c"/>
+    <circle cx="298" cy="352" r="9" fill="#fff" opacity="0.15"/>
+    <circle cx="384" cy="398" r="7" fill="#c4a574"/>
+    <circle cx="236" cy="428" r="8" fill="#7a2f3c"/>
+    <circle cx="338" cy="468" r="8" fill="#c4a574"/>
+    <circle cx="286" cy="536" r="9" fill="#7a2f3c"/>
+    <circle cx="404" cy="556" r="7" fill="#c4a574"/>
+    <circle cx="218" cy="578" r="7" fill="#7a2f3c"/>
+    <circle cx="352" cy="618" r="8" fill="#7a2f3c"/>
+  </g>
+
+  <!-- Berry sprigs -->
+  <g fill="#7a2f3c" opacity="0.88">
+    <circle cx="250" cy="318" r="3.5"/>
+    <circle cx="258" cy="326" r="3"/>
+    <circle cx="244" cy="328" r="2.8"/>
+    <circle cx="392" cy="488" r="3.5"/>
+    <circle cx="400" cy="496" r="3"/>
+    <circle cx="386" cy="498" r="2.8"/>
+  </g>
+  <g stroke="#35533c" stroke-width="1.6" fill="none" opacity="0.7">
+    <path d="M246 336c6-10 16-12 22-8"/>
+    <path d="M388 506c6-10 16-12 22-8"/>
+  </g>
+
+  <!-- Star -->
+  <g filter="url(#edge)">
+    <polygon points="320,52 328,74 352,74 332,88 340,110 320,96 300,110 308,88 288,74 312,74" fill="#c4a574"/>
+    <polygon points="320,62 325,74 338,74 328,82 332,94 320,86 308,94 312,82 302,74 315,74" fill="#f3e6c8" opacity="0.55"/>
+  </g>
+
+  <!-- Gifts -->
+  <g opacity="0.9">
+    <rect x="208" y="708" width="72" height="50" rx="3" fill="#f7f3eb" stroke="#7a2f3c" stroke-width="2.5"/>
+    <path d="M244 708v50M208 733h72" stroke="#7a2f3c" stroke-width="2.5"/>
+    <rect x="288" y="718" width="50" height="60" rx="3" fill="#5f7d62"/>
+    <path d="M313 718v60M288 748h50" stroke="#f7f3eb" stroke-width="2.5"/>
+    <rect x="348" y="712" width="62" height="54" rx="3" fill="#7a2f3c"/>
+    <path d="M379 712v54M348 739h62" stroke="#c4a574" stroke-width="2.5"/>
+  </g>
+</svg>

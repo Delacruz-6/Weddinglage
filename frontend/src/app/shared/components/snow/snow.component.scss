@@ -3,34 +3,48 @@
   position: fixed;
   inset: 0;
   overflow: hidden;
-  z-index: 1;
+  z-index: 3;
 }
 
 .flake {
   position: absolute;
-  top: -8%;
-  left: calc((var(--i) * 2.7%) + 1%);
-  width: 4px;
-  height: 4px;
+  top: -10%;
+  left: calc((var(--i) * 2.05%) + 0.5%);
+  width: calc(3px + (var(--i) * 0.11px));
+  height: calc(3px + (var(--i) * 0.11px));
   border-radius: 50%;
-  background: color-mix(in srgb, var(--color-snow) 80%, transparent);
-  opacity: 0.55;
-  animation: fall calc(9s + (var(--i) * 0.35s)) linear infinite;
+  background: #fff;
+  box-shadow:
+    0 0 8px color-mix(in srgb, #fff 80%, transparent),
+    0 0 2px color-mix(in srgb, var(--wine) 10%, transparent);
+  opacity: calc(0.45 + (var(--i) * 0.01));
+  animation:
+    fall calc(8s + (var(--i) * 0.38s)) linear infinite,
+    sway calc(2.8s + (var(--i) * 0.1s)) ease-in-out infinite alternate;
   animation-delay: calc(var(--i) * -0.4s);
 }
 
 @keyframes fall {
   0% {
-    transform: translateY(0) translateX(0);
+    transform: translateY(0);
   }
   100% {
-    transform: translateY(110vh) translateX(18px);
+    transform: translateY(115vh);
+  }
+}
+
+@keyframes sway {
+  from {
+    margin-left: 0;
+  }
+  to {
+    margin-left: 16px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .flake {
     animation: none;
-    opacity: 0.2;
+    opacity: 0.18;
   }
 }

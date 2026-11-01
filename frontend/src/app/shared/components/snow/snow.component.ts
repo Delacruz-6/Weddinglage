@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './snow.component.scss'
 })
 export class SnowComponent {
-  readonly flakes = Array.from({ length: 36 }, (_, i) => i);
+  readonly flakes = Array.from({ length: 48 }, (_, i) => i);
 }

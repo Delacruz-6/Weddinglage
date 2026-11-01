@@ -1,34 +1,42 @@
-@if (tracks().length) {
+@if (visible()) {
   <div class="player" role="region" aria-label="Reproductor de música">
     <div class="meta">
-      <span class="title">{{ current()?.title || 'Pista' }}</span>
-      @if (current()?.artist) {
-        <span class="artist">{{ current()?.artist }}</span>
-      }
+      <span class="title">{{ displayTitle() }}</span>
     </div>
+
+    <div class="progress-row">
+      <span class="t">{{ formatMs(positionMs()) }}</span>
+      <input
+        class="seek"
+        type="range"
+        min="0"
+        [max]="durationMs() || 1"
+        [value]="positionMs()"
+        (input)="onSeek($event)"
+        [attr.aria-valuetext]="formatMs(positionMs())"
+        aria-label="Progreso"
+      />
+      <span class="t">{{ formatMs(durationMs()) }}</span>
+    </div>
+
     <div class="controls">
-      <button type="button" class="icon-btn" (click)="prev()" aria-label="Anterior">‹</button>
-      <button type="button" class="icon-btn play" (click)="togglePlay()" [attr.aria-label]="playing() ? 'Pausar' : 'Reproducir'">
+      <button type="button" class="icon-btn" (click)="prev()" aria-label="Anterior" [disabled]="tracks().length < 2">
+        ‹
+      </button>
+      <button
+        type="button"
+        class="icon-btn play"
+        (click)="togglePlay()"
+        [attr.aria-label]="playing() ? 'Pausar' : 'Reproducir'"
+      >
         {{ playing() ? '❚❚' : '▶' }}
       </button>
-      <button type="button" class="icon-btn" (click)="next()" aria-label="Siguiente">›</button>
-      <button type="button" class="icon-btn" (click)="toggleMute()" [attr.aria-label]="muted() ? 'Activar sonido' : 'Silenciar'">
-        {{ muted() ? '🔇' : '🔊' }}
+      <button type="button" class="icon-btn" (click)="next()" aria-label="Siguiente" [disabled]="tracks().length < 2">
+        ›
       </button>
-      <label class="vol">
-        <span class="sr-only">Volumen</span>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.05"
-          [value]="volume()"
-          (input)="onVolume($event)"
-        />
-      </label>
+      <span class="bar" aria-hidden="true">
+        <span class="fill" [style.width.%]="progressPercent()"></span>
+      </span>
     </div>
-    @if (error()) {
-      <p class="err">{{ error() }}</p>
-    }
   </div>
 }

@@ -1,4 +1,3 @@
-<app-snow />
 <div class="wrap">
   <a routerLink="/" class="back">← Inicio</a>
   <h1>Editar confirmación</h1>
@@ -8,27 +7,44 @@
   } @else if (error() && !form.dirty) {
     <p class="error">{{ error() }}</p>
   } @else {
-    <p class="code">Invitación: <strong>{{ inviteCode() }}</strong></p>
+    @if (displayName()) {
+      <p class="code">Nombre: <strong>{{ displayName() }}</strong></p>
+    }
     <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <label>Nombre y apellidos <input formControlName="fullName" /></label>
       <fieldset>
         <legend>¿Vendréis?</legend>
         <label class="radio"><input type="radio" formControlName="attending" [value]="true" /> Sí</label>
         <label class="radio"><input type="radio" formControlName="attending" [value]="false" /> No</label>
       </fieldset>
-      <div class="row">
-        <label>Adultos <input type="number" min="0" formControlName="adults" /></label>
-        <label>Niños <input type="number" min="0" formControlName="children" /></label>
-      </div>
+      <label>Adultos <input type="number" min="0" formControlName="adults" /></label>
+
+      <fieldset formArrayName="childGuests">
+        <legend>Niños</legend>
+        @for (c of childGuests.controls; track $index; let i = $index) {
+          <div class="child-row" [formGroupName]="i">
+            <input formControlName="fullName" placeholder="Nombre" />
+            <input type="number" min="0" formControlName="age" placeholder="Edad" />
+            <input formControlName="intolerances" placeholder="Intolerancias" />
+            <button type="button" class="linkish" (click)="removeChild(i)">Quitar</button>
+          </div>
+        }
+        <button type="button" class="add-row" (click)="addChild()">+ Añadir niño/a</button>
+      </fieldset>
+
       <label>Notas <textarea formControlName="notes" rows="3"></textarea></label>
 
       <fieldset formArrayName="dietaryRequirements">
-        <legend>Requisitos alimentarios</legend>
+        <legend>Alergias o necesidades</legend>
+        <p class="hint">Podéis añadir tantas como hagan falta.</p>
         @for (d of dietary.controls; track $index; let i = $index) {
-          <div class="row" [formGroupName]="i">
-            <input formControlName="type" placeholder="Tipo" />
+          <div class="dietary-row" [formGroupName]="i">
+            <input formControlName="type" placeholder="Tipo (alergia, vegano…)" />
             <input formControlName="detail" placeholder="Detalle" />
+            <button type="button" class="linkish" (click)="removeDietary(i)">Quitar</button>
           </div>
         }
+        <button type="button" class="add-row" (click)="addDietary()">+ Añadir otra</button>
       </fieldset>
 
       <fieldset formArrayName="transport">

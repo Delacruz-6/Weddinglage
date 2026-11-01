@@ -9,6 +9,10 @@ public record WeddingConfigurationDto(
         String storyHtml,
         String giftIban,
         String giftHolder,
+        String heroImageUrl,
+        String storyImageUrl,
+        String spotifyPlaylistUrl,
+        String ornamentSuggestion,
         boolean showStory,
         boolean showVenue,
         boolean showTimeline,
@@ -16,6 +20,11 @@ public record WeddingConfigurationDto(
         boolean showGifts,
         boolean showRsvp,
         boolean showPhotos,
-        boolean showOrnaments
+        boolean showOrnaments,
+        boolean rsvpShowNotes,
+        boolean rsvpShowDietary,
+        boolean rsvpShowTransport,
+        boolean rsvpShowSongs,
+        boolean rsvpShowChildren
 ) {
 }

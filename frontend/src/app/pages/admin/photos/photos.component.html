@@ -25,15 +25,18 @@
 </section>
 
 <section class="panel">
-  <h2>Token de subida</h2>
+  <h2>QR / enlace de la app de fotos</h2>
+  <p class="hint">
+    Genera un enlace para imprimir en un QR aparte de la invitación. Abre la app móvil
+    <code>/fotos</code> (misma API, UI independiente del landing).
+  </p>
   <form [formGroup]="tokenForm" (ngSubmit)="createToken()" class="form">
     <label>Etiqueta <input formControlName="label" /></label>
     <label>Caduca <input type="datetime-local" formControlName="expiresAt" /></label>
-    <button type="submit">Crear token</button>
+    <button type="submit">Crear enlace</button>
   </form>
   @if (createdToken(); as t) {
     <div class="token-box">
-      <p><strong>Token:</strong> <code>{{ t.token }}</code></p>
       <p><strong>URL / QR:</strong> <code>{{ uploadUrl(t.token) }}</code></p>
       @if (t.expiresAt) {
         <p>Caduca: {{ t.expiresAt }}</p>

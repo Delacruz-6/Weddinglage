@@ -6,9 +6,9 @@
 }
 
 .wrap {
-  max-width: 28rem;
+  max-width: 30rem;
   margin: 0 auto;
-  padding: 2rem 1.25rem 4rem;
+  padding: 1.5rem 1.15rem 4rem;
   color: var(--color-snow);
 }
 
@@ -17,59 +17,120 @@
   text-decoration: none;
 }
 
-h1 {
-  font-family: var(--font-display);
+.intro {
+  margin: 1.35rem 0 1.35rem;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 0.4rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
   color: var(--color-gold);
+}
+
+.intro h1 {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2rem, 8vw, 2.6rem);
+  color: var(--color-cream);
+}
+
+.lede {
+  margin: 0 auto;
+  max-width: 26rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--color-cream) 88%, white);
+}
+
+.panel {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-fir) 55%, #1a3228), color-mix(in srgb, var(--color-dark) 80%, black));
+  border: 1px solid color-mix(in srgb, var(--color-gold) 42%, transparent);
+  padding: 1.15rem;
+  box-shadow: 0 18px 50px color-mix(in srgb, black 30%, transparent);
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0 0 0.65rem;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    color: var(--color-gold);
+    font-weight: 500;
+  }
+}
+
+.tip .pre,
+.pre {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.55;
+  color: var(--color-cream);
+}
+
+.lede.muted {
+  opacity: 0.8;
+  margin-bottom: 0.85rem;
 }
 
 .lookup {
   display: grid;
-  gap: 0.75rem;
-  margin: 1.5rem 0;
+  gap: 0.85rem;
 }
 
-label {
+.field {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.4rem;
+
+  > span {
+    font-size: 0.88rem;
+    color: var(--color-cream);
+  }
 }
 
 input {
-  border: 1px solid color-mix(in srgb, var(--color-gold) 45%, transparent);
-  background: color-mix(in srgb, var(--color-dark) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
+  background: color-mix(in srgb, var(--color-snow) 8%, transparent);
   color: var(--color-snow);
-  padding: 0.65rem 0.75rem;
+  padding: 0.8rem 0.85rem;
   font: inherit;
 }
 
 .btn {
-  justify-self: start;
   border: 1px solid var(--color-gold);
-  background: var(--color-burgundy);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-burgundy) 88%, white), var(--color-burgundy));
   color: var(--color-snow);
-  padding: 0.7rem 1.1rem;
+  padding: 0.8rem 1.15rem;
   cursor: pointer;
   font: inherit;
 }
 
 .card {
-  margin-top: 1.5rem;
-  padding: 1.25rem;
-  border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
-  background: color-mix(in srgb, var(--color-dark) 50%, transparent);
+  margin-top: 1.25rem;
   text-align: center;
 }
 
 .name {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   color: var(--color-gold);
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.35rem;
+}
+
+.code {
+  margin: 0;
+  letter-spacing: 0.08em;
+  color: var(--color-cream);
+}
+
+.status,
+.error {
+  margin-top: 1rem;
+  text-align: center;
 }
 
 .error {
   color: #f3c1c8;
-}
-
-.muted {
-  opacity: 0.75;
 }
